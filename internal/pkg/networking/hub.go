@@ -4,49 +4,48 @@ import (
 	"log"
 )
 
-type Hub struct {
+type hub struct {
 
 	// Registered clients.
-	clients map[*Client]bool
+	clients map[*client]bool
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
 
 	// Register requests from the clients.
-	Register chan *Client
+	register chan *client
 
 	// Unregister requests from clients.
-	unregister chan *Client
+	unregister chan *client
 }
 
-func NewHub(broadcast chan []byte) *Hub {
-	return &Hub{
-		broadcast:  broadcast,
-		Register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
-	}
-}
+type ClientRegisterCallback func(id uint8)
+type ClientUnregisterCallback func(id uint8)
 
-func (h *Hub) CalcClientID() uint8 {
+func (h *hub) clientID() uint8 {
 	return uint8(len(h.clients))
 }
 
-func (h *Hub) Start() {
+func (h *hub) start(registerCallback ClientRegisterCallback, unregisterCallback ClientUnregisterCallback) {
 	for {
 		select {
-		case client := <-h.Register:
+		case client := <-h.register:
 
-			log.Printf("New Client %s connected from %s.",
-				client.ID,
-				client.Conn.LocalAddr())
+			log.Printf("New Client %d connected from %s.",
+				client.id,
+				client.conn.LocalAddr())
 
 			h.clients[client] = true
+
+			registerCallback(client.id)
+
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
-				log.Printf("Client %s disconnected.", client.ID)
+				log.Printf("Client %d disconnected.", client.id)
 				delete(h.clients, client)
-				close(client.Send)
+				close(client.send)
+
+				unregisterCallback(client.id)
 			}
 		case message := <-h.broadcast:
 
@@ -56,20 +55,20 @@ func (h *Hub) Start() {
 
 				if numClients > 0 {
 					for _, bClientID := range message[1 : numClients+1] {
-						if client.ID == uint8(bClientID) {
+						if client.id == uint8(bClientID) {
 							select {
-							case client.Send <- message[numClients+1:]:
+							case client.send <- message[numClients+1:]:
 							default:
-								close(client.Send)
+								close(client.send)
 								delete(h.clients, client)
 							}
 						}
 					}
 				} else {
 					select {
-					case client.Send <- message[1:]:
+					case client.send <- message[1:]:
 					default:
-						close(client.Send)
+						close(client.send)
 						delete(h.clients, client)
 					}
 				}

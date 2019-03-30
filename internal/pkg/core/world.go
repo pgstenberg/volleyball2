@@ -17,8 +17,8 @@ func (w World) GetEntityManager() *EntityManager {
 	return w.entityManager
 }
 
-func (w World) Update(delta float64) {
+func (w World) Update(tick uint16, delta float64) {
 	for _, system := range w.systems {
-		system.Update(w.entityManager, delta)
+		system.Update(w.entityManager, tick, delta)
 	}
 }

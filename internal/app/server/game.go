@@ -4,18 +4,23 @@ import (
 	"time"
 
 	"stonecastle.local/pgstenberg/volleyball/internal/pkg/core"
+	"stonecastle.local/pgstenberg/volleyball/internal/pkg/networking"
 )
 
 type Game struct {
 	world  *core.World
 	ticker *time.Ticker
+	tick   uint16
 }
 
 func NewGame() *Game {
 
 	ts := transformSystem{}
+	nis := networkinputSystem{
+		server: networking.NewServer(),
+	}
 
-	w := core.NewWorld(transformFactory{}, []core.System{ts})
+	w := core.NewWorld(componentFactory{}, []core.System{ts, nis})
 
 	w.GetEntityManager().CreateComponent(w.GetEntityManager().CreateEntity(), "transform")
 
@@ -35,7 +40,8 @@ func (g Game) Start() {
 			// DT in seconds
 			delta := float64(t-t0) / 1000000000
 			t0 = t
-			g.world.Update(delta)
+			g.world.Update(g.tick, delta)
+			g.tick++
 		}
 	}
 

@@ -10,13 +10,12 @@ type transformComponent struct {
 }
 
 type transformSystem struct{}
-type transformFactory struct{}
 
 func (t transformComponent) ComponenType() string {
 	return "transform"
 }
 
-func (ts transformSystem) Update(entityManager *core.EntityManager, delta float64) {
+func (ts transformSystem) Update(entityManager *core.EntityManager, tick uint16, delta float64) {
 
 	for _, c := range entityManager.GetComponents("transform") {
 		a := (*c["transform"]).(*transformComponent)
@@ -25,12 +24,4 @@ func (ts transformSystem) Update(entityManager *core.EntityManager, delta float6
 }
 func (ts transformSystem) ID() string {
 	return "TransformSystem"
-}
-
-func (tf transformFactory) Create(cType string) *core.Component {
-	var c core.Component = &transformComponent{
-		positionX: uint16(0),
-		positionY: uint16(0),
-	}
-	return &c
 }

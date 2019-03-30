@@ -2,5 +2,5 @@ package core
 
 type System interface {
 	ID() string
-	Update(entityManager *EntityManager, delta float64)
+	Update(entityManager *EntityManager, tick uint16, delta float64)
 }

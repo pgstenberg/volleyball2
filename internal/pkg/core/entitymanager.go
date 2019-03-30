@@ -71,3 +71,21 @@ func (em EntityManager) GetComponents(cTypes ...string) map[string]map[string]*C
 
 	return returnMap
 }
+
+func (em EntityManager) GetEntityComponents(id string, cTypes ...string) map[string]*Component {
+	returnMap := make(map[string]*Component)
+
+	if em.components[id] == nil {
+		return returnMap
+	}
+
+	for t, c := range em.components[id] {
+		for _, cType := range cTypes {
+			if cType == t {
+				returnMap[t] = c
+			}
+		}
+	}
+
+	return returnMap
+}

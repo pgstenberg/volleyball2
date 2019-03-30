@@ -21,29 +21,29 @@ const (
 	maxMessageSize = 512
 )
 
-type Client struct {
-	Hub *Hub
+type client struct {
+	hub *hub
 
 	// Buffered channel of outbound messages.
-	Send chan []byte
+	send chan []byte
 
 	// The websocket connection.
-	Conn *websocket.Conn
+	conn *websocket.Conn
 
-	ID uint8
+	id uint8
 }
 
-func (c *Client) Read(ch chan<- []byte) {
+func (c *client) read(ch chan<- []byte) {
 
 	defer func() {
-		c.Hub.unregister <- c
-		c.Conn.Close()
+		c.hub.unregister <- c
+		c.conn.Close()
 	}()
-	c.Conn.SetReadLimit(maxMessageSize)
-	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
-	c.Conn.SetPongHandler(func(string) error { c.Conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	c.conn.SetReadLimit(maxMessageSize)
+	c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := c.Conn.ReadMessage()
+		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
@@ -51,27 +51,27 @@ func (c *Client) Read(ch chan<- []byte) {
 			break
 		}
 
-		ch <- append([]byte{byte(uint8(c.ID))}, message...)
+		ch <- append([]byte{byte(uint8(c.id))}, message...)
 	}
 }
 
-func (c *Client) Write() {
+func (c *client) write() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.Conn.Close()
+		c.conn.Close()
 	}()
 	for {
 		select {
-		case message, ok := <-c.Send:
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+		case message, ok := <-c.send:
+			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
-				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
-			w, err := c.Conn.NextWriter(websocket.BinaryMessage)
+			w, err := c.conn.NextWriter(websocket.BinaryMessage)
 			if err != nil {
 				return
 			}
@@ -82,8 +82,8 @@ func (c *Client) Write() {
 				return
 			}
 		case <-ticker.C:
-			c.Conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}
