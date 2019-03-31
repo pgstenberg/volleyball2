@@ -7,10 +7,12 @@ import (
 type hub struct {
 
 	// Registered clients.
-	clients map[*client]bool
+	clients map[uint8]*client
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
+
+	input chan []byte
 
 	// Register requests from the clients.
 	register chan *client
@@ -19,8 +21,8 @@ type hub struct {
 	unregister chan *client
 }
 
-type ClientRegisterCallback func(id uint8)
-type ClientUnregisterCallback func(id uint8)
+type ClientRegisterCallback func(clientID uint8)
+type ClientUnregisterCallback func(clientID uint8)
 
 func (h *hub) clientID() uint8 {
 	return uint8(len(h.clients))
@@ -35,44 +37,23 @@ func (h *hub) start(registerCallback ClientRegisterCallback, unregisterCallback 
 				client.id,
 				client.conn.LocalAddr())
 
-			h.clients[client] = true
+			h.clients[client.id] = client
 
 			registerCallback(client.id)
 
 		case client := <-h.unregister:
-			if _, ok := h.clients[client]; ok {
+			if _, ok := h.clients[client.id]; ok {
 				log.Printf("Client %d disconnected.", client.id)
-				delete(h.clients, client)
+
+				delete(h.clients, client.id)
 				close(client.send)
 
 				unregisterCallback(client.id)
 			}
 		case message := <-h.broadcast:
 
-			numClients := uint8(message[0])
-
-			for client := range h.clients {
-
-				if numClients > 0 {
-					for _, bClientID := range message[1 : numClients+1] {
-						if client.id == uint8(bClientID) {
-							select {
-							case client.send <- message[numClients+1:]:
-							default:
-								close(client.send)
-								delete(h.clients, client)
-							}
-						}
-					}
-				} else {
-					select {
-					case client.send <- message[1:]:
-					default:
-						close(client.send)
-						delete(h.clients, client)
-					}
-				}
-
+			for _, client := range h.clients {
+				client.send <- message
 			}
 
 		}

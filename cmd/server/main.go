@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", s.Bind, "http service address")
+
+	addr := flag.String("addr", "0.0.0.0:8080", "http service address")
 
 	g := server.NewGame()
 	g.Start()

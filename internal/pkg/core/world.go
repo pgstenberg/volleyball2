@@ -1,11 +1,16 @@
 package core
 
+import (
+	"fmt"
+	"sort"
+)
+
 type World struct {
 	entityManager *EntityManager
-	systems       []System
+	systems       map[int]System
 }
 
-func NewWorld(componentFactory ComponentFactory, systems []System) *World {
+func NewWorld(componentFactory ComponentFactory, systems map[int]System) *World {
 
 	return &World{
 		newEntityManager(componentFactory),
@@ -13,12 +18,19 @@ func NewWorld(componentFactory ComponentFactory, systems []System) *World {
 	}
 }
 
-func (w World) GetEntityManager() *EntityManager {
+func (w *World) GetEntityManager() *EntityManager {
 	return w.entityManager
 }
 
-func (w World) Update(tick uint16, delta float64) {
-	for _, system := range w.systems {
-		system.Update(w.entityManager, tick, delta)
+func (w *World) Update(tick uint16, delta float64) {
+
+	keys := make([]int, 0)
+	for k := range w.systems {
+		keys = append(keys, k)
 	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		w.systems[k].Update(w.entityManager, tick, delta)
+	}
+	fmt.Printf("Server Tick:%d\n", tick)
 }

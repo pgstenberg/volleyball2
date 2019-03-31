@@ -3,8 +3,9 @@ package server
 import (
 	"time"
 
+	"stonecastle.local/pgstenberg/volleyball/internal/app/server/factory"
+	"stonecastle.local/pgstenberg/volleyball/internal/app/server/system"
 	"stonecastle.local/pgstenberg/volleyball/internal/pkg/core"
-	"stonecastle.local/pgstenberg/volleyball/internal/pkg/networking"
 )
 
 type Game struct {
@@ -15,12 +16,10 @@ type Game struct {
 
 func NewGame() *Game {
 
-	ts := transformSystem{}
-	nis := networkinputSystem{
-		server: networking.NewServer(),
-	}
-
-	w := core.NewWorld(componentFactory{}, []core.System{ts, nis})
+	w := core.NewWorld(factory.ComponentFactory{}, map[int]core.System{
+		10: system.NewNetworkSystem(),
+		20: &system.TransformSystem{},
+	})
 
 	w.GetEntityManager().CreateComponent(w.GetEntityManager().CreateEntity(), "transform")
 
@@ -30,7 +29,11 @@ func NewGame() *Game {
 	}
 }
 
-func (g Game) Start() {
+func (g *Game) Start() {
+	go g.loop()
+}
+
+func (g *Game) loop() {
 	t0 := time.Now().UnixNano()
 
 	for {
