@@ -33,6 +33,13 @@ func (tf ComponentFactory) Create(cType string) *core.Component {
 		}
 		return &c
 
+	case constant.JumpComponent:
+
+		var c core.Component = &component.JumpComponent{
+			IsJumping: false,
+		}
+		return &c
+
 	default:
 		return nil
 	}

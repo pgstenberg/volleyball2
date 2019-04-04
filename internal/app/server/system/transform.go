@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"math"
 
 	"stonecastle.local/pgstenberg/volleyball/internal/app/server/component"
@@ -10,22 +11,43 @@ import (
 
 type TransformSystem struct{}
 
-func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16, delta float64) {
+func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16, pause bool, delta float64) {
+
+	if pause {
+		return
+	}
 
 	for _, components := range entityManager.GetComponents(constant.VelocityComponent, constant.TransformComponent) {
 
 		if components[constant.VelocityComponent] == nil || components[constant.TransformComponent] == nil {
-			continue
+			return
 		}
 
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
-		tc.PositionX = tc.PositionX + uint16(math.Round(vc.VelocityX*delta))
-		tc.PositionY = tc.PositionY + uint16(math.Round(vc.VelocityY*delta))
+		fmt.Printf("TICK: %d, vX: %d, vY: %d\n", tick, vc.VelocityX, vc.VelocityY)
 
+		dx := int(math.Round(vc.VelocityX * delta))
+		dy := int(math.Round(vc.VelocityY * delta))
+
+		tx := int(tc.PositionX)
+		ty := int(tc.PositionY)
+
+		tx += dx
 		vc.VelocityX = 0
-		vc.VelocityY = 0
+
+		if ty+dy < 0 {
+			ty = 0
+			vc.VelocityY = 0
+		} else {
+			ty += dy
+		}
+
+		tc.PositionX = uint16(tx)
+		tc.PositionY = uint16(ty)
+
+		fmt.Printf("TICK: %d, X: %d, Y: %d\n", tick, tc.PositionX, tc.PositionY)
 
 	}
 }

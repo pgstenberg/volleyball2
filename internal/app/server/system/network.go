@@ -41,28 +41,29 @@ func NewNetworkSystem() *NetworkSystem {
 	return &system
 }
 
-func (ts *NetworkSystem) Update(entityManager *core.EntityManager, tick uint16, delta float64) {
+func (ns *NetworkSystem) Update(entityManager *core.EntityManager, tick uint16, pause bool, delta float64) {
 
-	ts.pendingClientsMutex.Lock()
-	for _, cid := range ts.pendingClients {
-		ts.clients[cid] = entityManager.CreateEntity()
-		fmt.Printf("New entity %s created due to client %d connected.\n", ts.clients[cid], cid)
+	ns.pendingClientsMutex.Lock()
+	for _, cid := range ns.pendingClients {
+		ns.clients[cid] = entityManager.CreateEntity()
+		fmt.Printf("New entity %s created due to client %d connected.\n", ns.clients[cid], cid)
 
-		entityManager.CreateComponent(ts.clients[cid], constant.InputComponent)
-		entityManager.CreateComponent(ts.clients[cid], constant.VelocityComponent)
-		entityManager.CreateComponent(ts.clients[cid], constant.TransformComponent)
+		entityManager.CreateComponent(ns.clients[cid], constant.InputComponent)
+		entityManager.CreateComponent(ns.clients[cid], constant.VelocityComponent)
+		entityManager.CreateComponent(ns.clients[cid], constant.TransformComponent)
+		entityManager.CreateComponent(ns.clients[cid], constant.JumpComponent)
 
-		ts.server.Send([]byte{uint8(1), uint8(cid)}, cid)
+		ns.server.Send([]byte{uint8(1), uint8(cid)}, cid)
 	}
-	ts.pendingClients = nil
-	ts.pendingClientsMutex.Unlock()
+	ns.pendingClients = nil
+	ns.pendingClientsMutex.Unlock()
 
-	for _, b := range ts.server.Read() {
+	for _, b := range ns.server.Read() {
 
 		clientID := uint8(b[0])
 		packageType := uint8(b[1])
 
-		entity, ok := ts.clients[clientID]
+		entity, ok := ns.clients[clientID]
 
 		if !ok {
 			continue
@@ -73,15 +74,13 @@ func (ts *NetworkSystem) Update(entityManager *core.EntityManager, tick uint16, 
 		case 1:
 			ic := (*entityManager.GetEntityComponents(entity, constant.InputComponent)[constant.InputComponent]).(*component.InputComponent)
 
-			tick := binary.LittleEndian.Uint16(b[3:5])
+			tick := binary.LittleEndian.Uint16(b[3:6])
 			ic.Input[tick] = []bool{false, false, false}
 
-			for idx := 5; idx < len(b); idx++ {
+			for idx := 7; idx < len(b); idx++ {
 				id := uint8(b[idx])
 				ic.Input[tick][id] = true
 			}
-
-			fmt.Printf("INPUT %d=%s\n", tick, ic.Input[tick])
 
 		// Sync Event
 		case 2:
@@ -90,9 +89,7 @@ func (ts *NetworkSystem) Update(entityManager *core.EntityManager, tick uint16, 
 			binary.LittleEndian.PutUint16(d, tick)
 			b = append(b, d...)
 
-			fmt.Printf("TICK: %d\n", tick)
-
-			ts.server.Send(b, clientID)
+			ns.server.Send(b, clientID)
 
 		}
 	}

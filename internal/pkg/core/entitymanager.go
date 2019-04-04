@@ -5,32 +5,34 @@ import (
 )
 
 type EntityManager struct {
-	componentFactory ComponentFactory
-	components       map[string]map[string]*Component
+	componentFactory   ComponentFactory
+	components         map[string]map[string]*Component
+	bufferedComponents map[string]map[string]*Component
 }
 
 func newEntityManager(componentFactory ComponentFactory) *EntityManager {
 	return &EntityManager{
 		componentFactory,
 		make(map[string]map[string]*Component),
+		make(map[string]map[string]*Component),
 	}
 }
 
-func (em EntityManager) CreateEntity() string {
+func (em *EntityManager) CreateEntity() string {
 	id := uuid.Must(uuid.NewV4()).String()
-	em.components[id] = make(map[string]*Component)
+	em.bufferedComponents[id] = make(map[string]*Component)
 	return id
 }
 
-func (em EntityManager) DeleteEntity(id string) {
-	_, ok := em.components[id]
+func (em *EntityManager) DeleteEntity(id string) {
+	_, ok := em.bufferedComponents[id]
 	if ok {
-		delete(em.components, id)
+		delete(em.bufferedComponents, id)
 	}
 }
 
-func (em EntityManager) CreateComponent(id string, cType string) {
-	e, ok := em.components[id]
+func (em *EntityManager) CreateComponent(id string, cType string) {
+	e, ok := em.bufferedComponents[id]
 
 	if !ok {
 		return
@@ -40,21 +42,27 @@ func (em EntityManager) CreateComponent(id string, cType string) {
 
 }
 
-func (em EntityManager) DeleteComponent(id string, cType string) {
-	_, okE := em.components[id]
+func (em *EntityManager) sync() {
+	for k, v := range em.bufferedComponents {
+		em.components[k] = v
+	}
+}
+
+func (em *EntityManager) DeleteComponent(id string, cType string) {
+	_, okE := em.bufferedComponents[id]
 	if !okE {
 		return
 	}
 
-	_, okC := em.components[id][cType]
+	_, okC := em.bufferedComponents[id][cType]
 
 	if okC {
-		delete(em.components[id], cType)
+		delete(em.bufferedComponents[id], cType)
 	}
 
 }
 
-func (em EntityManager) GetComponents(cTypes ...string) map[string]map[string]*Component {
+func (em *EntityManager) GetComponents(cTypes ...string) map[string]map[string]*Component {
 
 	returnMap := make(map[string]map[string]*Component)
 
@@ -72,7 +80,7 @@ func (em EntityManager) GetComponents(cTypes ...string) map[string]map[string]*C
 	return returnMap
 }
 
-func (em EntityManager) GetEntityComponents(id string, cTypes ...string) map[string]*Component {
+func (em *EntityManager) GetEntityComponents(id string, cTypes ...string) map[string]*Component {
 	returnMap := make(map[string]*Component)
 
 	if em.components[id] == nil {
