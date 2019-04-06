@@ -8,6 +8,7 @@ import (
 	"stonecastle.local/pgstenberg/volleyball/internal/app/server/factory"
 	"stonecastle.local/pgstenberg/volleyball/internal/app/server/system"
 	"stonecastle.local/pgstenberg/volleyball/internal/pkg/core"
+	"stonecastle.local/pgstenberg/volleyball/internal/pkg/networking"
 )
 
 type Game struct {
@@ -15,20 +16,29 @@ type Game struct {
 	ticker         *time.Ticker
 	tick           uint16
 	numSkipedTicks int
+	clients        map[uint8]string
 }
 
 func NewGame() *Game {
 
+	server := networking.CreateServer()
+	clients := make(map[uint8]string)
+
 	w := core.NewWorld(factory.ComponentFactory{}, map[int]core.System{
-		10:  system.NewNetworkSystem(),
-		20:  &system.InputSystem{},
-		30:  &system.GravitySystem{},
+		10:  system.NewConnectSystem(server, clients),
+		20:  system.NewInstreamSystem(server, clients),
+		30:  &system.InputSystem{},
+		40:  &system.GravitySystem{},
 		100: &system.TransformSystem{},
+		200: system.NewOutstreamSystem(server, clients),
 	})
 
 	return &Game{
-		world:  w,
-		ticker: time.NewTicker(time.Second / 60),
+		world:          w,
+		ticker:         time.NewTicker(time.Second / 60),
+		tick:           uint16(1),
+		numSkipedTicks: 0,
+		clients:        clients,
 	}
 }
 

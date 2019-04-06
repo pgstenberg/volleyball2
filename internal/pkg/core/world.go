@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -27,10 +26,6 @@ type IsPaused func(entityManager *EntityManager, tick uint16) bool
 func (w *World) Update(tick uint16, isPaused IsPaused, delta float64) bool {
 
 	pause := isPaused(w.entityManager, tick)
-
-	if pause {
-		fmt.Printf("!!!!!!!!!! PAUSE !!!!!!!!!!\n")
-	}
 
 	keys := make([]int, 0)
 	for k := range w.systems {

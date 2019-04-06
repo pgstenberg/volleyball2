@@ -19,6 +19,9 @@ type hub struct {
 
 	// Unregister requests from clients.
 	unregister chan *client
+
+	clientRegisterCallbacks   []ClientRegisterCallback
+	clientUnregisterCallbacks []ClientUnregisterCallback
 }
 
 type ClientRegisterCallback func(clientID uint8)
@@ -28,7 +31,14 @@ func (h *hub) clientID() uint8 {
 	return uint8(len(h.clients))
 }
 
-func (h *hub) start(registerCallback ClientRegisterCallback, unregisterCallback ClientUnregisterCallback) {
+func (h *hub) addClientRegisterCallback(clientRegisterCallback ClientRegisterCallback) {
+	h.clientRegisterCallbacks = append(h.clientRegisterCallbacks, clientRegisterCallback)
+}
+func (h *hub) addClientUnregisterCallback(clientUnregisterCallback ClientUnregisterCallback) {
+	h.clientUnregisterCallbacks = append(h.clientUnregisterCallbacks, clientUnregisterCallback)
+}
+
+func (h *hub) start() {
 	for {
 		select {
 		case client := <-h.register:
@@ -39,7 +49,9 @@ func (h *hub) start(registerCallback ClientRegisterCallback, unregisterCallback 
 
 			h.clients[client.id] = client
 
-			registerCallback(client.id)
+			for _, registerCallback := range h.clientRegisterCallbacks {
+				registerCallback(client.id)
+			}
 
 		case client := <-h.unregister:
 			if _, ok := h.clients[client.id]; ok {
@@ -48,7 +60,9 @@ func (h *hub) start(registerCallback ClientRegisterCallback, unregisterCallback 
 				delete(h.clients, client.id)
 				close(client.send)
 
-				unregisterCallback(client.id)
+				for _, unregisterCallback := range h.clientRegisterCallbacks {
+					unregisterCallback(client.id)
+				}
 			}
 		case message := <-h.broadcast:
 

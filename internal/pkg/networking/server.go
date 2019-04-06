@@ -15,23 +15,25 @@ type Server struct {
 	inputMutex   *sync.Mutex
 }
 
-func Create(registerCallback ClientRegisterCallback, unregisterCallback ClientUnregisterCallback) *Server {
+func CreateServer() *Server {
 
 	server := &Server{
 		inputBuffer:  [][]byte{},
 		outputBuffer: [][]byte{},
 		inputMutex:   &sync.Mutex{},
 		hub: &hub{
-			broadcast:  make(chan []byte),
-			input:      make(chan []byte),
-			register:   make(chan *client),
-			unregister: make(chan *client),
-			clients:    make(map[uint8]*client),
+			broadcast:                 make(chan []byte),
+			input:                     make(chan []byte),
+			register:                  make(chan *client),
+			unregister:                make(chan *client),
+			clients:                   make(map[uint8]*client),
+			clientRegisterCallbacks:   []ClientRegisterCallback{},
+			clientUnregisterCallbacks: []ClientUnregisterCallback{},
 		},
 	}
 
 	go server.run()
-	go server.hub.start(registerCallback, unregisterCallback)
+	go server.hub.start()
 
 	upgrader := websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -40,6 +42,13 @@ func Create(registerCallback ClientRegisterCallback, unregisterCallback ClientUn
 	})
 
 	return server
+}
+
+func (server *Server) AddClientRegisterCallback(clientRegisterCallback ClientRegisterCallback) {
+	server.hub.addClientRegisterCallback(clientRegisterCallback)
+}
+func (server *Server) AddClientUnregisterCallback(clientUnregisterCallback ClientUnregisterCallback) {
+	server.hub.addClientUnregisterCallback(clientUnregisterCallback)
 }
 
 func (server *Server) run() {
@@ -58,7 +67,9 @@ func (server *Server) Send(data []byte, targets ...uint8) {
 	}
 
 	for _, target := range targets {
-		server.hub.clients[target].send <- data
+		if server.hub.clients[target] != nil {
+			server.hub.clients[target].send <- data
+		}
 	}
 
 }
