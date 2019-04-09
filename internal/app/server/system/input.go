@@ -1,6 +1,8 @@
 package system
 
 import (
+	"fmt"
+
 	"stonecastle.local/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.local/pgstenberg/volleyball/internal/app/server/constant"
 	"stonecastle.local/pgstenberg/volleyball/internal/pkg/core"
@@ -15,15 +17,20 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		return
 	}
 
-	for _, components := range entityManager.GetComponents(constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent) {
+	for id, components := range entityManager.GetComponents(constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent) {
 		ic := (*components[constant.InputComponent]).(*component.InputComponent)
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		jc := (*components[constant.JumpComponent]).(*component.JumpComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
 		if ic.Input[tick] == nil {
-			return
+			if ic.Input[tick-1] == nil {
+				return
+			}
+			ic.Input[tick] = ic.Input[tick-1]
 		}
+
+		fmt.Printf("TICK: %d, ID: %s, INPUT: %s\n", tick, id, ic.Input[tick])
 
 		if ic.Input[tick][constant.InputLeft] {
 			vc.VelocityX = -4 * 60

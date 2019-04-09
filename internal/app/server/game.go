@@ -47,15 +47,17 @@ func (g *Game) Start() {
 }
 
 func (g *Game) loop() {
-	t0 := time.Now().UnixNano()
+	//t0 := time.Now().UnixNano()
+
+	const delta float64 = float64(float64(1) / float64(60))
 
 	for {
 		select {
 		case <-g.ticker.C:
-			t := time.Now().UnixNano()
+			//t := time.Now().UnixNano()
 			// DT in seconds
-			delta := float64(t-t0) / 1000000000
-			t0 = t
+			//delta := float64(t-t0) / 1000000000
+			//t0 = t
 
 			if g.world.Update(g.tick, func(entityManager *core.EntityManager, tick uint16) bool {
 				if g.numSkipedTicks >= 3 {

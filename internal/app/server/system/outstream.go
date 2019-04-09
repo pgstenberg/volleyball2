@@ -23,37 +23,50 @@ func NewOutstreamSystem(server *networking.Server, clients map[uint8]string) *Ou
 
 func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16, pause bool, delta float64) {
 
+	if pause {
+		return
+	}
+
 	if (tick % 3) == 0 {
 
 		entities := entityManager.GetComponents(constant.TransformComponent)
 
-		b := []byte{uint8(3), uint8(len(entities))}
-
-		dt := make([]byte, 2)
-		binary.LittleEndian.PutUint16(dt, tick)
-		b = append(b, dt...)
+		binputs := []byte{}
 
 		for entityID, components := range entities {
 
 			tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
+			if tc.PrevPositionX == tc.PositionX && tc.PrevPositionY == tc.PositionY {
+				continue
+			}
+
 			for k, v := range os.clients {
 				if v == entityID {
-					b = append(b, k)
+					binputs = append(binputs, []byte{k}...)
 				}
 			}
 
 			dx := make([]byte, 2)
 			binary.LittleEndian.PutUint16(dx, tc.PositionX)
-			b = append(b, dx...)
+			binputs = append(binputs, dx...)
 
 			dy := make([]byte, 2)
 			binary.LittleEndian.PutUint16(dy, tc.PositionY)
-			b = append(b, dy...)
+			binputs = append(binputs, dy...)
 
 		}
 
-		os.server.Send(b)
+		if len(binputs) > 0 {
+			b0 := []byte{uint8(3), uint8(len(binputs) / 5)}
+
+			dt := make([]byte, 2)
+			binary.LittleEndian.PutUint16(dt, tick)
+			b0 = append(b0, dt...)
+
+			b0 = append(b0, binputs...)
+			os.server.Send(b0)
+		}
 	}
 
 }

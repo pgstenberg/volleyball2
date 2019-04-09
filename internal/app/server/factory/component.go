@@ -14,8 +14,10 @@ func (tf ComponentFactory) Create(cType string) *core.Component {
 
 	case constant.TransformComponent:
 		var c core.Component = &component.TransformComponent{
-			PositionX: uint16(0),
-			PositionY: uint16(0),
+			PositionX:     uint16(0),
+			PositionY:     uint16(0),
+			PrevPositionX: uint16(0),
+			PrevPositionY: uint16(0),
 		}
 		return &c
 

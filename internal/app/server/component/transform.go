@@ -5,6 +5,9 @@ import "stonecastle.local/pgstenberg/volleyball/internal/app/server/constant"
 type TransformComponent struct {
 	PositionX uint16
 	PositionY uint16
+
+	PrevPositionX uint16
+	PrevPositionY uint16
 }
 
 func (t TransformComponent) ComponenType() string {

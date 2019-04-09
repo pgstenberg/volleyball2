@@ -26,8 +26,6 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
-		fmt.Printf("TICK: %d, vX: %d, vY: %d\n", tick, vc.VelocityX, vc.VelocityY)
-
 		dx := int(math.Round(vc.VelocityX * delta))
 		dy := int(math.Round(vc.VelocityY * delta))
 
@@ -44,10 +42,13 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 			ty += dy
 		}
 
+		tc.PrevPositionX = uint16(tc.PositionX)
+		tc.PrevPositionY = uint16(tc.PositionY)
+
 		tc.PositionX = uint16(tx)
 		tc.PositionY = uint16(ty)
 
-		fmt.Printf("TICK: %d, X: %d, Y: %d\n", tick, tc.PositionX, tc.PositionY)
+		fmt.Printf("TICK: %d, X: %d, Y: %d, prevX: %d, prevU: %d \n", tick, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY)
 
 	}
 }
