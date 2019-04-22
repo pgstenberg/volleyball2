@@ -1,6 +1,8 @@
 class RenderSystem extends System {
     update(entityManager, delta, tick) {
-        let components = em.getComponents("transform", "graphics");
+        let components = entityManager.getComponents(
+            CONSTANTS.COMPONENT.TRANSFORM, 
+            CONSTANTS.COMPONENT.GRAPHICS);
 
         Object.keys(components)
             .forEach(function(eid){
