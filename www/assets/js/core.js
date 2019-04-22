@@ -12,11 +12,21 @@ class Utils {
     }    
 }
 
+class System {
+    update(entityManager, delta, tick) {
+        throw new Error('You have to implement this function!');
+    }
+}
+
 class EntityManager {
     _entities = {};
 
     constructor(componentFactories){
         this._componentFactories = componentFactories;
+    }
+
+    addComponentFactory(cType, factory){
+        this._componentFactories[cType] = factory;
     }
 
     createEntity(){
@@ -26,7 +36,14 @@ class EntityManager {
     }
 
     createComponent(id, cType){
-        this._entities[id][cType] = this._componentFactories[cType]();
+        let self = this;
+
+        this._entities[id][cType] = self._componentFactories[Object.keys(this._componentFactories).find(function(cf){
+            if(cf.split('.').pop().toLowerCase() === cType){
+                return cf;
+            }
+        })]();
+
         return this._entities[id][cType];
     }
 

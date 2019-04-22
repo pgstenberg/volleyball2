@@ -13,8 +13,16 @@
     integrity="sha256-88U/F4bfipOcvifK86snaq0VIYOpwFEc3fIEcpy2PH4=" 
     crossorigin="anonymous"></script>
 
-    <script src="assets/js/input.js"></script>
-<script src="assets/js/game.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-filters@2.6.1/dist/pixi-filters.js"></script>
+
+<script src="assets/js/const.js"></script>
+<script src="assets/js/input.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/components.js"></script>
+<script src="assets/js/systems/transform.js"></script>
+<script src="assets/js/systems/gravity.js"></script>
+<script src="assets/js/systems/render.js"></script>
+<script src="assets/js/systems/input.js"></script>
 
 <body>
   <script type="text/javascript">
@@ -56,56 +64,38 @@
         step = 1/60;
 
 
-    function update(delta){
-        /*
-        if(input[INPUT.RIGHT]){
-            graphics.x = graphics.x  + (4 * 60 * delta);
-        }else if(input[INPUT.LEFT]){
-            graphics.x = graphics.x  - (4 * 60 * delta);
-        }*/
+    function update(systems, entitymanager, delta, tick){
 
-        let components = em.getComponents("input", "transform", "graphics");
+        Object.keys(systems)
+            .sort((s1,s2) => s1 - s2)
+            .forEach(idx => systems[idx].update(entitymanager, delta, tick));
 
-        Object.keys(components)
-            .forEach(function(eid){
-                components[eid].input[tick] = input;
-                components[eid].transform.x = components[eid].transform.x + 4;
-
-                components[eid].graphics.x = components[eid].transform.x;
-            });
-
-
-        tick++;
     }
 
-    var em = new EntityManager({
-        'transform': function(){
-            return {
-                x: 0,
-                y: 0
-            };
-        },
-        'input': function(){
-            return {
-                0: [false, false, false]
-            };
-        },
-        'graphics': function(){
-            return new PIXI.Graphics();
-        }
-    });
+    const em = new EntityManager(components);
+
+    const systems = {
+        10: new InputSystem(),
+        15: new GravitySystem(),
+        20: new TransformSystem(),
+        100: new RenderSystem(),
+    }
 
     let id = em.createEntity();
-    em.createComponent(id, "input");
-    em.createComponent(id, "transform");
-    let g = em.createComponent(id, "graphics");
+    em.createComponent(id, CONSTANTS.COMPONENT.INPUT);
+    em.createComponent(id, CONSTANTS.COMPONENT.TRANSFORM);
+    em.createComponent(id, CONSTANTS.COMPONENT.VELOCITY);
+    em.createComponent(id, CONSTANTS.COMPONENT.JUMPING);
+    let g = em.createComponent(id, CONSTANTS.COMPONENT.GRAPHICS);
 
     g.lineStyle(3, 0xffffff);
-    g.arc(0, 200, 50, Math.PI, Math.PI * 2);
+    g.arc(0, 200, 50, Math.PI, 0);
+    g.lineTo(-50, 200);
+   
     // Add the graphics to the stage
     stage.addChild(g);
 
-
+    
     // Start animating
     animate();
     function animate() {
@@ -124,7 +114,8 @@
         dt = dt + Math.min(1, (now - last) / 1000);
         while(dt > step) {
             dt = dt - step;
-            update(step);
+            update(systems, em, step, tick);
+            tick = tick + 1;
         }
         last = now;
     }
