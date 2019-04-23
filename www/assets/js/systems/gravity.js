@@ -7,7 +7,7 @@ class GravitySystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                let g = (!components[eid].jumping.isJumping || components[eid].velocity.y < 0) ? (3*60) : (1*60);
+                let g = (!components[eid].jumping.isJumping || components[eid].velocity.y < 0) ? CONSTANTS.PHYSICS.MAX_GRAVITY : CONSTANTS.PHYSICS.MIN_GRAVITY;
 
                 components[eid].velocity.y -= g;
             });
