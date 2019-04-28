@@ -1,6 +1,7 @@
 class InputSystem extends System {
     update(entityManager, delta, tick) {
         let components = entityManager.getComponents(
+            true,
             CONSTANTS.COMPONENT.INPUT, 
             CONSTANTS.COMPONENT.TRANSFORM, 
             CONSTANTS.COMPONENT.JUMPING, 
@@ -8,6 +9,7 @@ class InputSystem extends System {
 
         Object.keys(components)
             .forEach(function(eid){
+
                 components[eid].input[tick] = input;
 
                 /* RIGHT */

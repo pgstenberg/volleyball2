@@ -13,19 +13,20 @@ class Utils {
 }
 
 class System {
-    update(entityManager, delta, tick) {
+    update(entityManager: EntityManager, delta, tick) {
         throw new Error('You have to implement this function!');
     }
 }
 
 class EntityManager {
-    _entities = {};
+    _entities: { [key: string]: { [key: string]: any } }= {};
+    _componentFactories: { [key: string]: Function } = {};
 
-    constructor(componentFactories){
+    constructor(componentFactories: { [key: string]: Function }){
         this._componentFactories = componentFactories;
     }
 
-    addComponentFactory(cType, factory){
+    addComponentFactory(cType: string, factory: Function){
         this._componentFactories[cType] = factory;
     }
 
@@ -35,7 +36,7 @@ class EntityManager {
         return id;
     }
 
-    createComponent(id, cType){
+    createComponent(id: string, cType: string){
         let self = this;
 
         this._entities[id][cType] = self._componentFactories[Object.keys(this._componentFactories).find(function(cf){
@@ -47,13 +48,18 @@ class EntityManager {
         return this._entities[id][cType];
     }
 
-    getEntityComponents(eid, ...cType){
+    getEntityComponents(eid: string, ...cType){
         let self = this;
         let rMap = {};
-        Object.keys(self._entities[eid]).filter(function(ct){
+        let fKeys:Array<string> = Object.keys(self._entities[eid]).filter(function(ct){
             return cType.includes(ct);
-        })
-        .forEach(function(ct) {
+        });
+
+        if(fKeys.length !== cType.length){
+            return rMap;
+        }
+
+        fKeys.forEach(function(ct) {
             if(rMap[eid] === undefined){
                 rMap[eid] = {};
             }
@@ -61,14 +67,19 @@ class EntityManager {
         })
         return rMap;
     }
-    getComponents(...cType){
+    getComponents(complete:boolean = true, ...cType){
         let self = this;
         let rMap = {};
         Object.keys(self._entities).forEach(function(eid) {
-            Object.keys(self._entities[eid]).filter(function(ct){
+            let fKeys:Array<string> = Object.keys(self._entities[eid]).filter(function(ct){
                 return cType.includes(ct);
-            })
-            .forEach(function(ct) {
+            });
+
+            if(fKeys.length !== cType.length && complete){
+                return;
+            }
+
+            fKeys.forEach(function(ct) {
                 if(rMap[eid] === undefined){
                     rMap[eid] = {};
                 }

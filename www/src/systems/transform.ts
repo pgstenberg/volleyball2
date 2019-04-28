@@ -1,6 +1,7 @@
 class TransformSystem extends System {
     update(entityManager, delta, tick) {
         let components = entityManager.getComponents(
+            true,
             CONSTANTS.COMPONENT.VELOCITY, 
             CONSTANTS.COMPONENT.TRANSFORM);
 
@@ -19,7 +20,7 @@ class TransformSystem extends System {
                 }
 
                 components[eid].transform.x += components[eid].velocity.x;
-                components[eid].transform.y  += components[eid].velocity.y;
+                components[eid].transform.y += components[eid].velocity.y;
 
 
 

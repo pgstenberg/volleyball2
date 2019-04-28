@@ -23,5 +23,8 @@ const components = {
         return {
             isJumping: false
         }
-    }
+    },
+    'CONSTANTS.COMPONENT.BALL': function(){
+        return;
+    },
 };

@@ -15,14 +15,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/pixi-filters@2.6.1/dist/pixi-filters.js"></script>
 
-<script src="assets/js/const.js"></script>
-<script src="assets/js/input.js"></script>
-<script src="assets/js/core.js"></script>
-<script src="assets/js/components.js"></script>
-<script src="assets/js/systems/transform.js"></script>
-<script src="assets/js/systems/gravity.js"></script>
-<script src="assets/js/systems/render.js"></script>
-<script src="assets/js/systems/input.js"></script>
+<script src="assets/js/app.js"></script>
 
 <body>
   <script type="text/javascript">
@@ -78,23 +71,42 @@
         10: new InputSystem(),
         15: new GravitySystem(),
         20: new TransformSystem(),
+        25: new CollisionSystem(),
         100: new RenderSystem(),
     }
 
     let id = em.createEntity();
     em.createComponent(id, CONSTANTS.COMPONENT.INPUT);
-    em.createComponent(id, CONSTANTS.COMPONENT.TRANSFORM);
+    let p_pos = em.createComponent(id, CONSTANTS.COMPONENT.TRANSFORM);
     em.createComponent(id, CONSTANTS.COMPONENT.VELOCITY);
     em.createComponent(id, CONSTANTS.COMPONENT.JUMPING);
     let g = em.createComponent(id, CONSTANTS.COMPONENT.GRAPHICS);
 
     g.lineStyle(3, 0xffffff);
-    g.arc(0, 200, 50, Math.PI, 0);
-    g.lineTo(-50, 200);
-   
+    g.arc(0, 0, 50, Math.PI, 0);
+    g.lineTo(-50, 0);
+
+    p_pos.x = 400;
+
+
+    let id_ball = em.createEntity();
+    let pos_ball = em.createComponent(id_ball, CONSTANTS.COMPONENT.TRANSFORM);
+    em.createComponent(id_ball, CONSTANTS.COMPONENT.VELOCITY);
+    em.createComponent(id_ball, CONSTANTS.COMPONENT.BALL);
+    let g_ball = em.createComponent(id_ball, CONSTANTS.COMPONENT.GRAPHICS);
+
+    g_ball.lineStyle(3, 0xffffff);
+    g_ball.drawCircle(0, 0, 10);
+
+    pos_ball.y = 800;
+    pos_ball.x = 400;
+
     // Add the graphics to the stage
     stage.addChild(g);
+    stage.addChild(g_ball);
 
+    console.log("ID BALL: " + id_ball);
+    console.log("ID: " + id);
     
     // Start animating
     animate();

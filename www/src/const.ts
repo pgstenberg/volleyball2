@@ -15,7 +15,8 @@ const CONSTANTS = {
         TRANSFORM: 'transform',
         VELOCITY: 'velocity',
         GRAPHICS: 'graphics',
-        JUMPING: 'jumping'
+        JUMPING: 'jumping',
+        BALL: 'ball'
     },
     PHYSICS: {
         PLAYER: {
