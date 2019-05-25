@@ -85,6 +85,7 @@
     g.lineStyle(3, 0xffffff);
     g.arc(0, 0, 50, Math.PI, 0);
     g.lineTo(-50, 0);
+    g.drawCircle(0, 0, 2);
 
     p_pos.x = 400;
 
@@ -120,7 +121,7 @@
     app.ticker.add(delta => gameLoop(delta));
 
     function gameLoop(delta){
-        const ms = delta / 50;
+        //const ms = delta / 50;
 
         now = timestamp();
         dt = dt + Math.min(1, (now - last) / 1000);

@@ -1,4 +1,5 @@
 class CollisionSystem extends System {
+
     update(entityManager: EntityManager, delta: number, tick: number) {
         let playerComponents = entityManager.getComponents(
             true,
@@ -25,10 +26,28 @@ class CollisionSystem extends System {
                         let dist = Math.sqrt(dx*dx + dy*dy);
                         
 
-                        if(dist < (50 + 5)){
-                            console.log("HIT!" + " DX: " + dx + ", DY:" + dy + ", VY: " + playerComponents[eid].velocity.y);
-                            ballComponent[bid].transform.y = playerComponents[eid].transform.y + 50 + 5;
-                            ballComponent[bid].velocity.y = Math.min(30, 20 + playerComponents[eid].velocity.y);
+                        if(dist < (50 + 5 + 6)){
+
+
+                            let a = Math.atan(dy/dx) + (Math.sign(dx) === 1 ? -Math.PI : 0);
+
+                            /*
+                            45
+                            -45
+                            */
+                           /*
+                            +90
+                            -40
+                           */
+
+                            console.log("HIT!" + " DX: " + dx + ", DY:" + dy + ", VY: " + playerComponents[eid].velocity.y + ", DIST: " + dist + " ANGLE1: " + a + ", X:" + playerComponents[eid].transform.x + ", Y: " + playerComponents[eid].transform.y + ", X1:" + ballComponent[bid].transform.x + ", Y1:" + ballComponent[bid].transform.y);
+
+
+
+
+                            ballComponent[bid].transform.y = playerComponents[eid].transform.y + (50 + 5 + 6) * Math.sin(a);
+                            ballComponent[bid].transform.x = playerComponents[eid].transform.x + (50 + 5 + 6) * Math.cos(a);
+                            ballComponent[bid].velocity.y = Math.min(30, (20 + playerComponents[eid].velocity.y));
                             ballComponent[bid].velocity.x = dx * -1;
                         }
 

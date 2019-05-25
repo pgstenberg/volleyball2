@@ -11,7 +11,7 @@ var INPUT = {
 
 var input = [false, false, false];
 
-function onkey(ev, key, pressed) {
+function onkey(ev: KeyboardEvent, key: number, pressed: boolean) {
     switch(key) {
       case KEY.LEFT:  input[INPUT.LEFT] = pressed; ev.preventDefault(); break;
       case KEY.RIGHT: input[INPUT.RIGHT] = pressed; ev.preventDefault(); break;

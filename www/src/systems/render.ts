@@ -1,5 +1,5 @@
 class RenderSystem extends System {
-    update(entityManager, delta, tick) {
+    update(entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.TRANSFORM, 
