@@ -10,6 +10,11 @@ const CONSTANTS = {
         RIGHT: 1,
         JUMP: 2
     },
+    PACKET_TYPE: {
+        INITIAL: 1,
+        SYNC: 2,
+        STATE: 3
+    },
     COMPONENT: {
         INPUT: 'input',
         TRANSFORM: 'transform',

@@ -72,23 +72,35 @@
         15: new GravitySystem(),
         20: new TransformSystem(),
         25: new CollisionSystem(),
+        30: new OutStreamSystem(),
         100: new RenderSystem(),
     }
 
-    let id = em.createEntity();
-    em.createComponent(id, CONSTANTS.COMPONENT.INPUT);
-    let p_pos = em.createComponent(id, CONSTANTS.COMPONENT.TRANSFORM);
-    em.createComponent(id, CONSTANTS.COMPONENT.VELOCITY);
-    em.createComponent(id, CONSTANTS.COMPONENT.JUMPING);
-    let g = em.createComponent(id, CONSTANTS.COMPONENT.GRAPHICS);
+    let id_player1 = em.createEntity();
+    let id_player2 = em.createEntity();
 
-    g.lineStyle(3, 0xffffff);
-    g.arc(0, 0, 50, Math.PI, 0);
-    g.lineTo(-50, 0);
-    g.drawCircle(0, 0, 2);
+    em.createComponent(id_player1, CONSTANTS.COMPONENT.INPUT);
+    em.createComponent(id_player1, CONSTANTS.COMPONENT.TRANSFORM);
+    em.createComponent(id_player1, CONSTANTS.COMPONENT.VELOCITY);
+    em.createComponent(id_player1, CONSTANTS.COMPONENT.JUMPING);
+    let g_player1 = em.createComponent(id_player1, CONSTANTS.COMPONENT.GRAPHICS);
+    g_player1.lineStyle(3, 0xffffff);
+    g_player1.arc(0, 0, 50, Math.PI, 0);
+    g_player1.lineTo(-50, 0);
+    g_player1.drawCircle(0, 0, 2);
 
-    p_pos.x = 400;
 
+    /*
+    em.createComponent(id_player2, CONSTANTS.COMPONENT.INPUT);
+    em.createComponent(id_player2, CONSTANTS.COMPONENT.TRANSFORM);
+    em.createComponent(id_player2, CONSTANTS.COMPONENT.VELOCITY);
+    em.createComponent(id_player2, CONSTANTS.COMPONENT.JUMPING);
+    let g_player2 = em.createComponent(id_player2, CONSTANTS.COMPONENT.GRAPHICS);
+    g_player2.lineStyle(3, 0xffffff);
+    g_player2.arc(0, 0, 50, Math.PI, 0);
+    g_player2.lineTo(-50, 0);
+    g_player2.drawCircle(0, 0, 2);
+    */
 
     let id_ball = em.createEntity();
     let pos_ball = em.createComponent(id_ball, CONSTANTS.COMPONENT.TRANSFORM);
@@ -102,12 +114,29 @@
     pos_ball.y = 800;
     pos_ball.x = 400;
 
-    // Add the graphics to the stage
-    stage.addChild(g);
-    stage.addChild(g_ball);
 
-    console.log("ID BALL: " + id_ball);
-    console.log("ID: " + id);
+    let g_wall0 = em.createComponent(em.createEntity(), CONSTANTS.COMPONENT.GRAPHICS)
+        .lineStyle(3, 0xffffff)
+        .moveTo(1, 800)
+        .lineTo(1, 0);
+
+    let g_wall1 = em.createComponent(em.createEntity(), CONSTANTS.COMPONENT.GRAPHICS)
+        .lineStyle(3, 0xffffff)
+        .moveTo(1200, 800)
+        .lineTo(1200, 0);
+    
+    let g_rope = em.createComponent(em.createEntity(), CONSTANTS.COMPONENT.GRAPHICS)
+        .lineStyle(10, 0xffffff)
+        .moveTo(595, 800)
+        .lineTo(595, 650);
+
+    // Add the graphics to the stage
+    stage.addChild(g_player1);
+    //stage.addChild(g_player2);
+    stage.addChild(g_ball);
+    stage.addChild(g_wall0);
+    stage.addChild(g_wall1);
+    stage.addChild(g_rope);
     
     // Start animating
     animate();

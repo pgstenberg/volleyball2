@@ -58,8 +58,9 @@ class CollisionSystem extends System {
         
         Object.keys(ballComponent)
             .forEach(function(bid){
-                if(ballComponent[bid].transform.x > 800){
-                    ballComponent[bid].transform.x = 800;
+
+                if(ballComponent[bid].transform.x > 1200){
+                    ballComponent[bid].transform.x = 1200;
 
                     if(ballComponent[bid].velocity.x > 0){
                         ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
@@ -70,6 +71,21 @@ class CollisionSystem extends System {
                     if(ballComponent[bid].velocity.x < 0){
                         ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
                     }
+                
+                // ROPE COLLISION
+                }else if(ballComponent[bid].transform.x > 595 && 
+                        ballComponent[bid].transform.x < 605 && 
+                        ballComponent[bid].transform.y < 150){
+
+                    /*
+                    if(ballComponent[bid].transform.x > 600){
+                        ballComponent[bid].transform.x = 595;
+                    }else if(ballComponent[bid].transform.x < 600){
+                        ballComponent[bid].transform.x = 605;
+                    }
+                    */
+
+                    ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
                 }
 
                 if(ballComponent[bid].transform.y <= 0){

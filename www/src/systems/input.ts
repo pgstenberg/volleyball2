@@ -7,10 +7,13 @@ class InputSystem extends System {
             CONSTANTS.COMPONENT.JUMPING, 
             CONSTANTS.COMPONENT.VELOCITY);
 
+
+        let idx = 0;
+
         Object.keys(components)
             .forEach(function(eid){
 
-                components[eid].input[tick] = input;
+                components[eid].input[tick] = input[0];
 
                 /* RIGHT */
                 if(components[eid].input[tick][INPUT.RIGHT]){
