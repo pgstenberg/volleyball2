@@ -34,6 +34,7 @@ if ("WebSocket" in window) {
                     'type': packetType,
                     'state': [{}]
                 };
+                /*
                 let clientCount = dv.getUint8(1);
                 let idx;
                 for (idx = 0; idx <= (clientCount * 5); idx = idx + 5) {
@@ -43,6 +44,7 @@ if ("WebSocket" in window) {
                     }
                 }
                 inStreamBuffer.push(package);
+                */
             break;
         }
 

@@ -7,6 +7,11 @@ class OutStreamSystem extends System {
             true,
             CONSTANTS.COMPONENT.INPUT);
 
+        function getInt64Bytes(x:number) {
+            let y= x/2**32;
+            return [y,(y<<8),(y<<16),(y<<24), x,(x<<8),(x<<16),(x<<24)].map(z=> z>>>24)
+        }
+
         Object.keys(components)
             .forEach(function(eid){
 
@@ -16,20 +21,26 @@ class OutStreamSystem extends System {
 
                 
                 if(ws_open){
-                    let buffer:ArrayBuffer = new ArrayBuffer(3 + numActiveInput);
+                    let buffer:DataView = new DataView(new ArrayBuffer(3 + numActiveInput))
 
-                    new Uint8Array(buffer, 0, 1)[0] = 1;
-                    new Uint16Array(buffer, 2, 2)[0] = tick;
+                    buffer.setUint8(0, 1);
 
-                    let idx;
+                    let tickBytes = getInt64Bytes(tick);
 
-                    for(idx = 0; idx < components[eid].input[tick].length; idx++){
-                        if(components[eid].input[tick][idx]){
-                            new Uint8Array(buffer, 4, 1)[0] = idx;
+                    buffer.setUint8(1, tickBytes[tickBytes.length-1]);
+                    buffer.setUint8(2, tickBytes[tickBytes.length-2]);
+
+                    let inputIdx;
+                    let idx=0;
+
+                    for(inputIdx = 0; inputIdx < components[eid].input[tick].length; inputIdx++){
+                        if(components[eid].input[tick][inputIdx]){
+                            buffer.setInt8(3+idx, inputIdx);
+                            idx++;
                         }
                     }
 
-                    ws.send(buffer);
+                    ws.send(buffer.buffer);
                 }
             
             });
