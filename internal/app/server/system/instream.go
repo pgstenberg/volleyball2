@@ -44,10 +44,10 @@ func (is *InstreamSystem) Update(entityManager *core.EntityManager, tick uint16,
 
 			ic := (*entityManager.GetEntityComponents(entity, constant.InputComponent)[constant.InputComponent]).(*component.InputComponent)
 
-			tick := binary.LittleEndian.Uint16(b[3:6])
+			tick := binary.LittleEndian.Uint16(b[2:4])
 			ic.Input[tick] = []bool{false, false, false}
 
-			for idx := 7; idx < len(b); idx++ {
+			for idx := 4; idx < len(b); idx++ {
 				id := uint8(b[idx])
 				ic.Input[tick][id] = true
 			}

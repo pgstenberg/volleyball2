@@ -32,21 +32,46 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 
 		fmt.Printf("TICK: %d, ID: %s, INPUT: %s\n", tick, id, ic.Input[tick])
 
-		if ic.Input[tick][constant.InputLeft] {
-			vc.VelocityX = -4 * 60
-		} else if ic.Input[tick][constant.InputRight] {
-			vc.VelocityX = 4 * 60
+		/* RIGHT */
+		if ic.Input[tick][constant.InputRight] {
+			if vc.VelocityX < 0 {
+				vc.VelocityX = constant.VelocityX
+			} else {
+				vc.VelocityX += constant.VelocityX
+			}
+			/* LEFT */
+		} else if ic.Input[tick][constant.InputLeft] {
+			if vc.VelocityX > 0 {
+				vc.VelocityX = -constant.VelocityX
+			} else {
+				vc.VelocityX += -constant.VelocityX
+			}
+			/* NO INPUT */
+		} else {
+			if vc.VelocityX > (constant.VelocityX * 2) {
+				vc.VelocityX = vc.VelocityX - constant.VelocityX
+			} else if vc.VelocityX < -(constant.VelocityX * 2) {
+				vc.VelocityX = vc.VelocityX + constant.VelocityX
+			} else {
+				vc.VelocityX = 0
+			}
 		}
 
-		if ic.Input[tick][constant.InputJump] && tc.PositionY == 0 && !jc.IsJumping {
-			vc.VelocityY = 14 * 3 * 60
+		/*
+		*	JUMPING
+		 */
+
+		if ic.Input[tick][constant.InputJump] &&
+			tc.PositionY == 0 &&
+			!jc.IsJumping {
+
+			vc.VelocityY = constant.JumpVelocity
 			jc.IsJumping = true
 		}
-
 		if !ic.Input[tick][constant.InputJump] {
 			jc.IsJumping = false
-			if vc.VelocityY > (3 * 60) {
-				vc.VelocityY = 3 * 60
+			if vc.VelocityY > constant.MaxGravity {
+				vc.VelocityY = constant.JumpMinVelocity
 			}
 		}
 

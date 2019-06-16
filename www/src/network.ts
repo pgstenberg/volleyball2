@@ -7,6 +7,8 @@ ws.binaryType = 'arraybuffer';
 
 var inStreamBuffer = [{}];
 
+var t0:number;
+
 
 if ("WebSocket" in window) {
 
@@ -26,7 +28,8 @@ if ("WebSocket" in window) {
             case 2:
                 inStreamBuffer.push({
                     'type': packetType,
-                    'tick': dv.getUint16(1)
+                    'tick': dv.getUint16(1, true),
+                    'delta': ((window.performance && window.performance.now ? window.performance.now() : new Date().getTime()) - t0)
                 });
             break;
             case 3:
@@ -53,6 +56,13 @@ if ("WebSocket" in window) {
 
     ws.onopen = function() {
         ws_open = true;
+
+        let buffer:DataView = new DataView(new ArrayBuffer(1));
+        buffer.setUint8(0,2);
+
+        t0 = (window.performance && window.performance.now ? window.performance.now() : new Date().getTime());
+        ws.send(buffer.buffer);
+
       };
     ws.onclose = function() {
         ws_open = false;

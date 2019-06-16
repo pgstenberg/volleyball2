@@ -23,7 +23,20 @@ func (gs *GravitySystem) Update(entityManager *core.EntityManager, tick uint16, 
 
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 
-		vc.VelocityY -= (4 * 60)
+		g := constant.MinGravity / 2
+
+		if components[constant.JumpComponent] != nil {
+			jc := (*components[constant.JumpComponent]).(*component.JumpComponent)
+			vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
+
+			if !jc.IsJumping || vc.VelocityY < 0 {
+				g = constant.MaxGravity
+			} else {
+				g = constant.MinGravity
+			}
+		}
+
+		vc.VelocityY -= g
 
 	}
 }

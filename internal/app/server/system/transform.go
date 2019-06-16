@@ -17,7 +17,7 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		return
 	}
 
-	for _, components := range entityManager.GetComponents(constant.VelocityComponent, constant.TransformComponent) {
+	for id, components := range entityManager.GetComponents(constant.VelocityComponent, constant.TransformComponent) {
 
 		if components[constant.VelocityComponent] == nil || components[constant.TransformComponent] == nil {
 			return
@@ -26,29 +26,29 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
-		dx := int(math.Round(vc.VelocityX * delta))
-		dy := int(math.Round(vc.VelocityY * delta))
+		if vc.VelocityX > constant.MaxVelocityX {
+			vc.VelocityX = constant.MaxVelocityX
+		} else if vc.VelocityX < -constant.MaxVelocityX {
+			vc.VelocityX = -constant.MaxVelocityX
+		}
 
-		tx := int(tc.PositionX)
-		ty := int(tc.PositionY)
+		dx := (vc.VelocityX / 3)
+		dy := (vc.VelocityY / 3)
 
-		tx += dx
-		vc.VelocityX = 0
+		fmt.Printf("TICK: %d, ID: %s, VelX: %d, VelY: %d\n", tick, id, vc.VelocityX, vc.VelocityY)
 
-		if ty+dy < 0 {
-			ty = 0
+		if float64(tc.PositionY)+dy < 0 {
+			tc.PositionY = 0
 			vc.VelocityY = 0
-		} else {
-			ty += dy
 		}
 
 		tc.PrevPositionX = uint16(tc.PositionX)
 		tc.PrevPositionY = uint16(tc.PositionY)
 
-		tc.PositionX = uint16(tx)
-		tc.PositionY = uint16(ty)
+		tc.PositionX += uint16(math.Round(dx))
+		tc.PositionY += uint16(math.Round(dy))
 
-		fmt.Printf("TICK: %d, X: %d, Y: %d, prevX: %d, prevU: %d \n", tick, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY)
+		fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevU: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY)
 
 	}
 }

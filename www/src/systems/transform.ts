@@ -19,9 +19,13 @@ class TransformSystem extends System {
                     components[eid].velocity.y = 0;
                 }
 
-                components[eid].transform.x += (components[eid].velocity.x / 3);
-                components[eid].transform.y += (components[eid].velocity.y / 3);
+                components[eid].transform.x += Math.round(components[eid].velocity.x / 3);
+                components[eid].transform.y += Math.round(components[eid].velocity.y / 3);
 
+                if(ws_open){
+                    console.log("TICK: " + tick + ", X: " + components[eid].transform.x + ", Y: " + components[eid].transform.y);
+                }
+                
 
 
             });

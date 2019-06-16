@@ -68,6 +68,7 @@
     const em = new EntityManager(components);
 
     const systems = {
+        5: new InStreamSystem(),
         10: new InputSystem(),
         15: new GravitySystem(),
         20: new TransformSystem(),
