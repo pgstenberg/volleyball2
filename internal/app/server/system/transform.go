@@ -32,12 +32,7 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 			vc.VelocityX = -constant.MaxVelocityX
 		}
 
-		dx := (vc.VelocityX / 3)
-		dy := (vc.VelocityY / 3)
-
-		fmt.Printf("TICK: %d, ID: %s, VelX: %d, VelY: %d\n", tick, id, vc.VelocityX, vc.VelocityY)
-
-		if float64(tc.PositionY)+dy < 0 {
+		if float64(tc.PositionY)+vc.VelocityY < 0 {
 			tc.PositionY = 0
 			vc.VelocityY = 0
 		}
@@ -45,10 +40,10 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		tc.PrevPositionX = uint16(tc.PositionX)
 		tc.PrevPositionY = uint16(tc.PositionY)
 
-		tc.PositionX += uint16(math.Round(dx))
-		tc.PositionY += uint16(math.Round(dy))
+		tc.PositionX += uint16(math.Round(vc.VelocityX))
+		tc.PositionY += uint16(math.Round(vc.VelocityY))
 
-		fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevU: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY)
+		fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevY: %d, velX: %d, velY: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
 
 	}
 }

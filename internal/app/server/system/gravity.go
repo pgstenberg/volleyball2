@@ -15,7 +15,7 @@ func (gs *GravitySystem) Update(entityManager *core.EntityManager, tick uint16, 
 		return
 	}
 
-	for _, components := range entityManager.GetComponents(constant.TransformComponent, constant.VelocityComponent) {
+	for _, components := range entityManager.GetComponents(constant.TransformComponent, constant.VelocityComponent, constant.JumpComponent) {
 
 		if components[constant.VelocityComponent] == nil {
 			return

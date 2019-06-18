@@ -25,12 +25,12 @@ const CONSTANTS = {
     },
     PHYSICS: {
         PLAYER: {
-            VELOCITY_X: 4,
-            MAX_VELOCITY_X: 20,
-            JUMP_VELOCITY: (8 * 3),
-            JUMP_MIN_VELOCITY: 6
+            VELOCITY_X: 2,
+            MAX_VELOCITY_X: 15,
+            JUMP_VELOCITY: 10,
+            JUMP_MIN_VELOCITY: 2
         },
-        MAX_GRAVITY: 3,
-        MIN_GRAVITY: 1
+        MAX_GRAVITY: 1,
+        MIN_GRAVITY: 0.5
     }
 }
