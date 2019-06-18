@@ -53,7 +53,20 @@ func (cs *ConnectSystem) Update(entityManager *core.EntityManager, tick uint16, 
 		entityManager.CreateComponent(cs.clients[cid], constant.TransformComponent)
 		entityManager.CreateComponent(cs.clients[cid], constant.JumpComponent)
 
-		cs.server.Send([]byte{uint8(1), uint8(cid)}, cid)
+		if len(cs.clients) == 1 {
+			cs.server.Send([]byte{uint8(1), uint8(cid)}, cid)
+			break
+		}
+
+		for cid0 := range cs.clients {
+			c := []byte{uint8(1), uint8(cid0)}
+			for cid1 := range cs.clients {
+				if cid1 != cid0 {
+					c = append(c, cid1)
+				}
+			}
+			cs.server.Send(c, cid0)
+		}
 	}
 	cs.pendingClients = nil
 	cs.pendingClientsMutex.Unlock()

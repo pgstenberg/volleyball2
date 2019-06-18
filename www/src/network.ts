@@ -20,10 +20,17 @@ if ("WebSocket" in window) {
 
         switch(packetType){
             case 1:
-                inStreamBuffer.push({
+                let connectPackage = {
                     'type': packetType,
-                    'client_id': dv.getUint8(1)
-                });
+                    'player_client_id': dv.getUint8(1),
+                    'opponent_client_id': -1
+                };
+
+                if(dv.byteLength === 3){
+                    connectPackage.opponent_client_id = dv.getUint8(2);
+                }
+                
+                inStreamBuffer.push(connectPackage);
             break;
             case 2:
                 inStreamBuffer.push({
@@ -35,23 +42,30 @@ if ("WebSocket" in window) {
             case 3:
                 let package = {
                     'type': packetType,
-                    'state': [{}]
+                    'tick': dv.getUint16(2, true),
+                    'state': {}
                 };
-                /*
+                
                 let clientCount = dv.getUint8(1);
+
+                let state:{ [key: number]: { [key: string]: number } } = {};
+                
                 let idx;
-                for (idx = 0; idx <= (clientCount * 5); idx = idx + 5) {
-                    package.state[dv.getUint8(2 + idx)] = {
-                        'x': dv.getUint16(3 + idx),
-                        'y': dv.getUint16(5 + idx)
-                    }
+                for (idx = 4; idx < dv.byteLength; idx = idx + 5) {
+
+                    state[dv.getUint8(idx)] = {
+                        'x': dv.getUint16(idx + 1, true),
+                        'y': dv.getUint16(idx + 3, true)
+                    };
                 }
+
+                package.state = state;
+
                 inStreamBuffer.push(package);
-                */
+                
             break;
         }
 
-        console.log("PackageType: " + packetType);
     }
 
     ws.onopen = function() {

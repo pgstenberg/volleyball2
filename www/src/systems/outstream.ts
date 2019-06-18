@@ -1,7 +1,7 @@
 class OutStreamSystem extends System {
 
 
-    update(entityManager: EntityManager, delta: number, tick: number) {
+    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
 
         let components = entityManager.getComponents(
             true,
@@ -41,6 +41,15 @@ class OutStreamSystem extends System {
                     }
 
                     ws.send(buffer.buffer);
+
+
+                    if(tick % 60 === 0){
+                        let buffer:DataView = new DataView(new ArrayBuffer(1));
+                        buffer.setUint8(0,2);
+                
+                        t0 = (window.performance && window.performance.now ? window.performance.now() : new Date().getTime());
+                        ws.send(buffer.buffer);
+                    }
                 }
             
             });

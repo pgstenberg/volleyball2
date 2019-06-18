@@ -1,5 +1,5 @@
 class TransformSystem extends System {
-    update(entityManager: EntityManager, delta: number, tick: number) {
+    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.VELOCITY, 

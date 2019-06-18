@@ -45,45 +45,17 @@
     // Create the main stage for your display objects
     var stage = new PIXI.Container();
 
-    function timestamp() {
-        return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-    };
-
-
-    var now, 
-        dt = 0, 
-        last = timestamp(),
-        tick = 0;
-        step = 1/60;
-
-
-    function update(systems, entitymanager, delta, tick){
-
-        Object.keys(systems)
-            .sort((s1,s2) => s1 - s2)
-            .forEach(idx => systems[idx].update(entitymanager, delta, tick));
-
-    }
-
     const em = new EntityManager(components);
 
-    const systems = {
-        5: new InStreamSystem(),
-        10: new InputSystem(),
-        15: new GravitySystem(),
-        20: new TransformSystem(),
-        25: new CollisionSystem(),
-        30: new OutStreamSystem(),
-        100: new RenderSystem(),
-    }
 
     let id_player1 = em.createEntity();
-    let id_player2 = em.createEntity();
+    //let id_player2 = em.createEntity();
 
     em.createComponent(id_player1, CONSTANTS.COMPONENT.INPUT);
     em.createComponent(id_player1, CONSTANTS.COMPONENT.TRANSFORM);
     em.createComponent(id_player1, CONSTANTS.COMPONENT.VELOCITY);
     em.createComponent(id_player1, CONSTANTS.COMPONENT.JUMPING);
+    em.createComponent(id_player1, CONSTANTS.COMPONENT.NETWORKING);
     let g_player1 = em.createComponent(id_player1, CONSTANTS.COMPONENT.GRAPHICS);
     g_player1.lineStyle(3, 0xffffff);
     g_player1.arc(0, 0, 50, Math.PI, 0);
@@ -147,21 +119,21 @@
         requestAnimationFrame(animate);
     }
 
+    var game = new Game({
+        5: new InStreamSystem(),
+        10: new InputSystem(),
+        11: new InterpolationSystem(),
+        15: new GravitySystem(),
+        20: new TransformSystem(),
+        25: new CollisionSystem(),
+        30: new OutStreamSystem(),
+        100: new RenderSystem(stage),
+    }, em, id_player1);
+
     //Start the game loop 
-    app.ticker.add(delta => gameLoop(delta));
+    app.ticker.add(delta => game.update(delta));
 
-    function gameLoop(delta){
-        //const ms = delta / 50;
-
-        now = timestamp();
-        dt = dt + Math.min(1, (now - last) / 1000);
-        while(dt > step) {
-            dt = dt - step;
-            update(systems, em, step, tick);
-            tick = tick + 1;
-        }
-        last = now;
-    }
+    
 
 
 

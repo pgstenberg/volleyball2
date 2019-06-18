@@ -13,8 +13,56 @@ class Utils {
 }
 
 class System {
-    update(entityManager: EntityManager, delta: number, tick: number) {
+    update(_game: Game, _entityManager: EntityManager, _delta: number, _tick: number) {
         throw new Error('You have to implement this function!');
+    }
+}
+
+class Game {
+    now: number;
+    dt: number;
+    last: number;
+    tick: number;
+
+    _player_entity_id: string;
+    _opponent_entity_id: string = undefined;
+
+    step:number = 1/60;
+
+    _systems: { [key: number]: System }
+    _entityManager: EntityManager
+
+
+
+    _timestamp(): number {
+        return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    }
+
+    update(delta:number){
+
+        this.now = this._timestamp();
+        this.dt = this.dt + Math.min(1, (this.now - this.last) / 1000);
+        while(this.dt > this.step) {
+            this.dt = this.dt - this.step;
+            
+            Object.keys(this._systems)
+                .sort((s1,s2) => parseInt(s1) - parseInt(s2))
+                .forEach(idx => this._systems[parseInt(idx)].update(this, this._entityManager, delta, this.tick));
+
+            this.tick = this.tick + 1;
+        }
+        this.last = this.now;
+    }
+
+
+    constructor(systems: { [key: number]: System }, entityManager: EntityManager, playerEntityId: string){ 
+        this.dt = 0;
+        this.now = this._timestamp();
+        this.last = this._timestamp();
+        this.tick = 0;
+        this._systems = systems;
+        this._entityManager = entityManager;
+        this._player_entity_id = playerEntityId;
     }
 }
 

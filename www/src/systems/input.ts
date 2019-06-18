@@ -1,5 +1,5 @@
 class InputSystem extends System {
-    update(entityManager: EntityManager, delta: number, tick: number) {
+    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.INPUT, 
@@ -13,7 +13,7 @@ class InputSystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                components[eid].input[tick] = input[0];
+                components[eid].input[tick] = input;
 
                 /* RIGHT */
                 if(components[eid].input[tick][INPUT.RIGHT]){

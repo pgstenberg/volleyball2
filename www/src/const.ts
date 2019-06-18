@@ -21,7 +21,9 @@ const CONSTANTS = {
         VELOCITY: 'velocity',
         GRAPHICS: 'graphics',
         JUMPING: 'jumping',
-        BALL: 'ball'
+        BALL: 'ball',
+        INTERPOLATION: 'interpolation',
+        NETWORKING: 'networking'
     },
     PHYSICS: {
         PLAYER: {

@@ -14,17 +14,13 @@ var INPUT = {
     JUMP: 2,
 };
 
-var input = [[false, false, false],[false, false, false]];
+var input = [false, false, false];
 
 function onkey(ev: KeyboardEvent, key: number, pressed: boolean) {
     switch(key) {
-      case KEY.LEFT:  input[0][INPUT.LEFT] = pressed; ev.preventDefault(); break;
-      case KEY.RIGHT: input[0][INPUT.RIGHT] = pressed; ev.preventDefault(); break;
-      case KEY.UP: input[0][INPUT.JUMP]  = pressed; ev.preventDefault(); break;
-
-      case KEY.W:  input[1][INPUT.JUMP] = pressed; ev.preventDefault(); break;
-      case KEY.A: input[1][INPUT.LEFT] = pressed; ev.preventDefault(); break;
-      case KEY.D: input[1][INPUT.RIGHT]  = pressed; ev.preventDefault(); break;
+      case KEY.LEFT:  input[INPUT.LEFT] = pressed; ev.preventDefault(); break;
+      case KEY.RIGHT: input[INPUT.RIGHT] = pressed; ev.preventDefault(); break;
+      case KEY.UP: input[INPUT.JUMP]  = pressed; ev.preventDefault(); break;
     }
 }
 

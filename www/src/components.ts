@@ -5,6 +5,17 @@ const components = {
             y: 0
         };
     },
+    'CONSTANTS.COMPONENT.INTERPOLATION': function(){
+        return {
+            x: 0,
+            y: 0
+        };
+    },
+    'CONSTANTS.COMPONENT.NETWORKING': function(){
+        return {
+            id: -1,
+        };
+    },
     'CONSTANTS.COMPONENT.VELOCITY': function(){
         return {
             x: 0,
