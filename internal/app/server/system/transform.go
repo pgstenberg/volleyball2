@@ -37,13 +37,15 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 			vc.VelocityY = 0
 		}
 
+		if tc.PrevPositionX != tc.PositionX || tc.PrevPositionY != tc.PositionY {
+			fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevY: %d, velX: %d, velY: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
+		}
+
 		tc.PrevPositionX = uint16(tc.PositionX)
 		tc.PrevPositionY = uint16(tc.PositionY)
 
 		tc.PositionX += uint16(math.Round(vc.VelocityX))
 		tc.PositionY += uint16(math.Round(vc.VelocityY))
-
-		fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevY: %d, velX: %d, velY: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
 
 	}
 }

@@ -23,14 +23,25 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		jc := (*components[constant.JumpComponent]).(*component.JumpComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
+		if ic.Input[tick] != nil && ic.Input[tick-1] != nil {
+			p := false
+			for idx, _ := range ic.Input[tick] {
+				if ic.Input[tick][idx] != ic.Input[tick-1][idx] {
+					p = true
+					break
+				}
+			}
+			if p {
+				fmt.Printf("TICK: %d, ID: %s, INPUT: %s\n", tick, id, ic.Input[tick])
+			}
+		}
+
 		if ic.Input[tick] == nil {
 			if ic.Input[tick-1] == nil {
 				return
 			}
 			ic.Input[tick] = ic.Input[tick-1]
 		}
-
-		fmt.Printf("TICK: %d, ID: %s, INPUT: %s\n", tick, id, ic.Input[tick])
 
 		/* RIGHT */
 		if ic.Input[tick][constant.InputRight] {
