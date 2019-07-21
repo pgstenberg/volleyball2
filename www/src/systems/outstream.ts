@@ -43,12 +43,14 @@ class OutStreamSystem extends System {
                     ws.send(buffer.buffer);
 
 
-                    if(tick % 60 === 0){
+                    if(sync_required){
                         let buffer:DataView = new DataView(new ArrayBuffer(1));
                         buffer.setUint8(0,2);
                 
                         t0 = (window.performance && window.performance.now ? window.performance.now() : new Date().getTime());
                         ws.send(buffer.buffer);
+
+                        sync_required = false;
                     }
                 }
             

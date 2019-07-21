@@ -60,18 +60,20 @@ func (g *Game) loop() {
 			//t0 = t
 
 			if g.world.Update(g.tick, func(entityManager *core.EntityManager, tick uint16) bool {
-				if g.numSkipedTicks >= 3 {
-					g.numSkipedTicks = 0
-					return false
-				}
+				/*
+					if g.numSkipedTicks >= 3 {
+						g.numSkipedTicks = 0
+						return false
+					}
+				*/
 				for _, components := range entityManager.GetComponents(constant.InputComponent) {
 					ic := (*components[constant.InputComponent]).(*component.InputComponent)
 					if ic.Input[tick] == nil {
-						g.numSkipedTicks++
+						//g.numSkipedTicks++
 						return true
 					}
 				}
-				g.numSkipedTicks = 0
+				//g.numSkipedTicks = 0
 				return false
 			}, delta) {
 				g.tick++

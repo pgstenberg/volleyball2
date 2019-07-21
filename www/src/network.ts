@@ -1,6 +1,8 @@
 
 var ws_open:boolean = false;
 
+var sync_required:boolean = false;
+
 
 var ws:WebSocket = new WebSocket("ws://127.0.0.1:8080/");
 ws.binaryType = 'arraybuffer';
@@ -71,11 +73,7 @@ if ("WebSocket" in window) {
     ws.onopen = function() {
         ws_open = true;
 
-        let buffer:DataView = new DataView(new ArrayBuffer(1));
-        buffer.setUint8(0,2);
-
-        t0 = (window.performance && window.performance.now ? window.performance.now() : new Date().getTime());
-        ws.send(buffer.buffer);
+        sync_required = true;
 
       };
     ws.onclose = function() {

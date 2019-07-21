@@ -9,17 +9,9 @@ class InterpolationSystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                if(ws_open){
-                    console.log(">>>> " + eid + "  X: " + components[eid].interpolation.x);
-                }
-
-                /*
-                if(components[eid].transform.x < components[eid].interpolation.x){
-                    components[eid].velocity.x = 5; 
-                }else if(components[eid].transform.x > components[eid].interpolation.x){
-                    components[eid].velocity.x = -5; 
-                }
-                */
+                components[eid].velocity.x = components[eid].interpolation.x - components[eid].transform.x; 
+                
+                components[eid].velocity.y = components[eid].interpolation.y - components[eid].transform.y;
             });
 
     }

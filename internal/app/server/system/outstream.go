@@ -27,46 +27,43 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 		return
 	}
 
-	if (tick % 3) == 0 {
+	entities := entityManager.GetComponents(constant.TransformComponent)
 
-		entities := entityManager.GetComponents(constant.TransformComponent)
+	binputs := []byte{}
 
-		binputs := []byte{}
+	for entityID, components := range entities {
 
-		for entityID, components := range entities {
+		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
-			tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
-
-			if tc.PrevPositionX == tc.PositionX && tc.PrevPositionY == tc.PositionY {
-				continue
-			}
-
-			for k, v := range os.clients {
-				if v == entityID {
-					binputs = append(binputs, []byte{k}...)
-				}
-			}
-
-			dx := make([]byte, 2)
-			binary.LittleEndian.PutUint16(dx, tc.PositionX)
-			binputs = append(binputs, dx...)
-
-			dy := make([]byte, 2)
-			binary.LittleEndian.PutUint16(dy, tc.PositionY)
-			binputs = append(binputs, dy...)
-
+		if tc.PrevPositionX == tc.PositionX && tc.PrevPositionY == tc.PositionY {
+			continue
 		}
 
-		if len(binputs) > 0 {
-			b0 := []byte{uint8(3), uint8(len(binputs) / 5)}
-
-			dt := make([]byte, 2)
-			binary.LittleEndian.PutUint16(dt, tick)
-			b0 = append(b0, dt...)
-
-			b0 = append(b0, binputs...)
-			os.server.Send(b0)
+		for k, v := range os.clients {
+			if v == entityID {
+				binputs = append(binputs, []byte{k}...)
+			}
 		}
+
+		dx := make([]byte, 2)
+		binary.LittleEndian.PutUint16(dx, tc.PositionX)
+		binputs = append(binputs, dx...)
+
+		dy := make([]byte, 2)
+		binary.LittleEndian.PutUint16(dy, tc.PositionY)
+		binputs = append(binputs, dy...)
+
+	}
+
+	if len(binputs) > 0 {
+		b0 := []byte{uint8(3), uint8(len(binputs) / 5)}
+
+		dt := make([]byte, 2)
+		binary.LittleEndian.PutUint16(dt, tick)
+		b0 = append(b0, dt...)
+
+		b0 = append(b0, binputs...)
+		os.server.Send(b0)
 	}
 
 }

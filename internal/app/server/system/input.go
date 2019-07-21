@@ -36,13 +36,6 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 			}
 		}
 
-		if ic.Input[tick] == nil {
-			if ic.Input[tick-1] == nil {
-				return
-			}
-			ic.Input[tick] = ic.Input[tick-1]
-		}
-
 		/* RIGHT */
 		if ic.Input[tick][constant.InputRight] {
 			if vc.VelocityX < 0 {

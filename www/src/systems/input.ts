@@ -15,6 +15,10 @@ class InputSystem extends System {
 
                 components[eid].input[tick] = input;
 
+                if(ws_open){
+                    console.log("TICK: " + tick + ", INPUT: " + components[eid].input[tick]);
+                }
+
                 /* RIGHT */
                 if(components[eid].input[tick][INPUT.RIGHT]){
                     if(components[eid].velocity.x < 0){
