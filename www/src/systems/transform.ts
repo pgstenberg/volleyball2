@@ -22,7 +22,7 @@ class TransformSystem extends System {
                 components[eid].transform.x += Math.round(components[eid].velocity.x);
                 components[eid].transform.y += Math.round(components[eid].velocity.y);
 
-                if(ws_open){
+                if(ws_open || true){
                     console.log("TICK: " + tick + ", X: " + components[eid].transform.x + ", Y: " + components[eid].transform.y + ", VX: " + components[eid].velocity.x + ", VY: " + components[eid].velocity.y);
                 }
                 

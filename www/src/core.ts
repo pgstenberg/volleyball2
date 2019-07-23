@@ -32,6 +32,8 @@ class Game {
     _systems: { [key: number]: System }
     _entityManager: EntityManager
 
+    _stateBuffer: { [key: number]: { [key: string]: { [key: string]: any } } };
+
 
 
     _timestamp(): number {
@@ -49,6 +51,13 @@ class Game {
                 .sort((s1,s2) => parseInt(s1) - parseInt(s2))
                 .forEach(idx => this._systems[parseInt(idx)].update(this, this._entityManager, delta, this.tick));
 
+            this._stateBuffer[this.tick % 25] = this._entityManager.copy();
+
+            if(this.tick > 100 && (this.tick % 100) === 0){
+                console.log("REVERT!!!");
+                this._entityManager.restore(this._stateBuffer[(this.tick-20) % 25]);
+            }
+
             this.tick = this.tick + 1;
         }
         this.last = this.now;
@@ -62,6 +71,7 @@ class Game {
         this.tick = 0;
         this._systems = systems;
         this._entityManager = entityManager;
+        this._stateBuffer = [];
         this._player_entity_id = playerEntityId;
     }
 }
@@ -72,6 +82,44 @@ class EntityManager {
 
     constructor(componentFactories: { [key: string]: Function }){
         this._componentFactories = componentFactories;
+    }
+
+    copy(): { [key: string]: { [key: string]: any } } {
+        let self = this;
+
+        let copy: { [key: string]: { [key: string]: any } } = {};
+
+        let components = self.getComponents(
+            true,
+            CONSTANTS.COMPONENT.VELOCITY, 
+            CONSTANTS.COMPONENT.TRANSFORM,
+            CONSTANTS.COMPONENT.INPUT);
+
+        Object.keys(components).forEach(function(eid) {
+            copy[eid] = {};
+            Object.keys(components[eid]).forEach(function(c) {
+                copy[eid][c] = Object.assign({}, components[eid][c]);
+            });
+        });
+
+        return copy;
+    }
+
+    restore(state: { [key: string]: { [key: string]: any } }){
+        let self = this;
+
+        Object.keys(state).forEach(function(eid) {
+            Object.keys(state[eid]).forEach(function(c) {
+                console.log("EID RESTORE>>>: " + eid + " COMPONENT: " + c);
+                self._entities[eid][c] = Object.assign({}, state[eid][c]);
+            });
+        });
+
+    }
+
+    getComponentFactories(): { [key: string]: Function } {
+        let self = this;
+        return self._componentFactories;
     }
 
     addComponentFactory(cType: string, factory: Function){
@@ -124,7 +172,8 @@ class EntityManager {
         let rMap: { [key: string]: { [key: string]: any } } = {};
         Object.keys(self._entities).forEach(function(eid) {
             let fKeys:Array<string> = Object.keys(self._entities[eid]).filter(function(ct){
-                return cType.indexOf(ct) !== -1;
+                // Check if component type match any in cType or if none where given.
+                return cType.indexOf(ct) !== -1 || cType.length === 0;
             });
 
             if(fKeys.length !== cType.length && complete){
