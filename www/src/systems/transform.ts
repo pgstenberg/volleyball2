@@ -1,5 +1,5 @@
 class TransformSystem extends System {
-    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
+    update(_stateManager: StateManager, entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.VELOCITY, 
@@ -22,7 +22,7 @@ class TransformSystem extends System {
                 components[eid].transform.x += Math.round(components[eid].velocity.x);
                 components[eid].transform.y += Math.round(components[eid].velocity.y);
 
-                if(ws_open || true){
+                if(ws_open){
                     console.log("TICK: " + tick + ", X: " + components[eid].transform.x + ", Y: " + components[eid].transform.y + ", VX: " + components[eid].velocity.x + ", VY: " + components[eid].velocity.y);
                 }
                 

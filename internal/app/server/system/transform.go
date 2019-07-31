@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"math"
 
-	"stonecastle.local/pgstenberg/volleyball/internal/app/server/component"
-	"stonecastle.local/pgstenberg/volleyball/internal/app/server/constant"
-	"stonecastle.local/pgstenberg/volleyball/internal/pkg/core"
+	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
+	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
+	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/pkg/core"
 )
 
 type TransformSystem struct{}

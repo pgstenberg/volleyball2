@@ -13,7 +13,7 @@ class Utils {
 }
 
 class System {
-    update(_game: Game, _entityManager: EntityManager, _delta: number, _tick: number) {
+    update(_stateManager: StateManager, _entityManager: EntityManager, _delta: number, _tick: number) {
         throw new Error('You have to implement this function!');
     }
 }
@@ -32,12 +32,16 @@ class Game {
     _systems: { [key: number]: System }
     _entityManager: EntityManager
 
-    _stateBuffer: { [key: number]: { [key: string]: { [key: string]: any } } };
-
-
+    _stateManager: StateManager
 
     _timestamp(): number {
         return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    }
+
+    _updateSystems(delta:number){
+        Object.keys(this._systems)
+            .sort((s1,s2) => parseInt(s1) - parseInt(s2))
+            .forEach(idx => this._systems[parseInt(idx)].update(this._stateManager, this._entityManager, delta, Global.Rollback));
     }
 
     update(delta:number){
@@ -46,17 +50,24 @@ class Game {
         this.dt = this.dt + Math.min(1, (this.now - this.last) / 1000);
         while(this.dt > this.step) {
             this.dt = this.dt - this.step;
-            
-            Object.keys(this._systems)
-                .sort((s1,s2) => parseInt(s1) - parseInt(s2))
-                .forEach(idx => this._systems[parseInt(idx)].update(this, this._entityManager, delta, this.tick));
 
-            this._stateBuffer[this.tick % 25] = this._entityManager.copy();
-
-            if(this.tick > 100 && (this.tick % 100) === 0){
-                console.log("REVERT!!!");
-                this._entityManager.restore(this._stateBuffer[(this.tick-20) % 25]);
+            if(Global.Rollback !== undefined){
+                while(Global.Rollback < this.tick){
+                    this._entityManager.restore(this._stateManager.restore(Global.Rollback));
+                    this._updateSystems(delta);
+                    Global.Rollback = Global.Rollback + 1;
+                }
+                Global.Rollback = undefined;
             }
+
+            if(Global.Sync !== undefined){
+                this.tick = Global.Sync;
+                Global.Sync = undefined;
+            }
+            
+            this._updateSystems(delta);
+
+            this._stateManager.store(this.tick, this._entityManager);
 
             this.tick = this.tick + 1;
         }
@@ -71,8 +82,40 @@ class Game {
         this.tick = 0;
         this._systems = systems;
         this._entityManager = entityManager;
-        this._stateBuffer = [];
+        this._stateManager = new StateManager();
         this._player_entity_id = playerEntityId;
+    }
+}
+
+class StateManager {
+    _state: { [key: string]: { [key: string]: any } }[] = [];
+
+    store(tick: number, entityManager: EntityManager) {
+        let self = this;
+        self._state[tick % CONSTANTS.CORE.STATEBUFFERSIZE] = entityManager.copy();
+    }
+
+    restore(tick: number, ...filter: string[]): { [key: string]: { [key: string]: any } }{
+        let self = this;
+        if(!filter.length){
+            return self._state[tick % CONSTANTS.CORE.STATEBUFFERSIZE];
+        }
+
+        let r: { [key: string]: { [key: string]: any } } = {};
+
+        Object.keys(self._state[tick % CONSTANTS.CORE.STATEBUFFERSIZE]).forEach(function(eid){
+            Object.keys(self._state[tick % CONSTANTS.CORE.STATEBUFFERSIZE][eid]).forEach(function(c) {
+                if(filter.indexOf(c) !== -1 || !filter.length){
+                    if(r[eid] === undefined){
+                        r[eid] = {};
+                    }
+
+                    r[eid][c] = self._state[tick % CONSTANTS.CORE.STATEBUFFERSIZE][eid][c];
+                }
+            });
+        });
+
+        return r;
     }
 }
 
@@ -82,6 +125,8 @@ class EntityManager {
 
     constructor(componentFactories: { [key: string]: Function }){
         this._componentFactories = componentFactories;
+
+        this._entities[CONSTANTS.CORE.VOIDENTITY] = {};
     }
 
     copy(): { [key: string]: { [key: string]: any } } {
@@ -110,7 +155,6 @@ class EntityManager {
 
         Object.keys(state).forEach(function(eid) {
             Object.keys(state[eid]).forEach(function(c) {
-                console.log("EID RESTORE>>>: " + eid + " COMPONENT: " + c);
                 self._entities[eid][c] = Object.assign({}, state[eid][c]);
             });
         });

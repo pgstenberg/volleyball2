@@ -1,6 +1,6 @@
 class CollisionSystem extends System {
 
-    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
+    update(_stateManager: StateManager, entityManager: EntityManager, delta: number, tick: number) {
         let playerComponents = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.VELOCITY, 
@@ -47,7 +47,7 @@ class CollisionSystem extends System {
 
                             ballComponent[bid].transform.y = playerComponents[eid].transform.y + (50 + 5 + 6) * Math.sin(a);
                             ballComponent[bid].transform.x = playerComponents[eid].transform.x + (50 + 5 + 6) * Math.cos(a);
-                            ballComponent[bid].velocity.y = Math.min(30, (20 + playerComponents[eid].velocity.y));
+                            ballComponent[bid].velocity.y = Math.min(15, (10 + playerComponents[eid].velocity.y));
                             ballComponent[bid].velocity.x = dx * -1;
                         }
 

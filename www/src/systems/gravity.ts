@@ -1,5 +1,5 @@
 class GravitySystem extends System {
-    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
+    update(_stateManager: StateManager, entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             false,
             CONSTANTS.COMPONENT.VELOCITY, 

@@ -1,5 +1,5 @@
 class InputSystem extends System {
-    update(_game: Game, entityManager: EntityManager, delta: number, tick: number) {
+    update(_stateManager: StateManager, entityManager: EntityManager, delta: number, tick: number) {
         let components = entityManager.getComponents(
             true,
             CONSTANTS.COMPONENT.INPUT, 
@@ -13,21 +13,25 @@ class InputSystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                components[eid].input[tick] = input;
+                components[eid].input = Global.Input;
 
                 if(ws_open){
-                    console.log("TICK: " + tick + ", INPUT: " + components[eid].input[tick]);
+                    console.log("TICK: " + tick + ", INPUT: " + components[eid].input);
+                }
+
+                if(Global.Input[INPUT.ROLLBACK] && Global.Rollback === undefined){
+                    Global.Rollback = tick - 100;
                 }
 
                 /* RIGHT */
-                if(components[eid].input[tick][INPUT.RIGHT]){
+                if(components[eid].input[INPUT.RIGHT]){
                     if(components[eid].velocity.x < 0){
                         components[eid].velocity.x = CONSTANTS.PHYSICS.PLAYER.VELOCITY_X;
                     }else{
                         components[eid].velocity.x += CONSTANTS.PHYSICS.PLAYER.VELOCITY_X;
                     }
                 /* LEFT */
-                }else if(components[eid].input[tick][INPUT.LEFT]){
+                }else if(components[eid].input[INPUT.LEFT]){
                     if(components[eid].velocity.x > 0){
                         components[eid].velocity.x = -CONSTANTS.PHYSICS.PLAYER.VELOCITY_X;
                     }else{
@@ -47,7 +51,7 @@ class InputSystem extends System {
                 /*
                     JUMPING MECHANICS
                 */
-                if(components[eid].input[tick][INPUT.JUMP] && 
+                if(components[eid].input[INPUT.JUMP] && 
                         components[eid].transform.y === 0 && 
                         !components[eid].jumping.isJumping){
 
@@ -55,7 +59,7 @@ class InputSystem extends System {
                     components[eid].jumping.isJumping = true;
                 }
 
-                if(!components[eid].input[tick][INPUT.JUMP]){
+                if(!components[eid].input[INPUT.JUMP]){
                     components[eid].jumping.isJumping = false;
                     if(components[eid].velocity.y > CONSTANTS.PHYSICS.MAX_GRAVITY) {
                         components[eid].velocity.y = CONSTANTS.PHYSICS.PLAYER.JUMP_MIN_VELOCITY;

@@ -1,6 +1,6 @@
 package component
 
-import "stonecastle.local/pgstenberg/volleyball/internal/app/server/constant"
+import "stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
 
 type InputComponent struct {
 	Input map[uint16][]bool

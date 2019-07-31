@@ -5,6 +5,9 @@ const components = {
             y: 0
         };
     },
+    'CONSTANTS.COMPONENT.EVENT': function(){
+        return new Array();
+    },
     'CONSTANTS.COMPONENT.INTERPOLATION': function(){
         return {
             x: 0,
@@ -23,9 +26,7 @@ const components = {
         };
     },
     'CONSTANTS.COMPONENT.INPUT': function(){
-        return {
-            0: [false, false, false]
-        };
+        return [false, false, false];
     },
     'CONSTANTS.COMPONENT.GRAPHICS': function(){
         return new PIXI.Graphics();
@@ -36,6 +37,12 @@ const components = {
         }
     },
     'CONSTANTS.COMPONENT.BALL': function(){
+        return;
+    },
+    'CONSTANTS.COMPONENT.PLAYER': function(){
+        return;
+    },
+    'CONSTANTS.COMPONENT.OPPONENT': function(){
         return;
     },
 };

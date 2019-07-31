@@ -10,6 +10,10 @@ const CONSTANTS = {
         RIGHT: 1,
         JUMP: 2
     },
+    CORE: {
+        VOIDENTITY: "void",
+        STATEBUFFERSIZE: 150
+    },
     PACKET_TYPE: {
         INITIAL: 1,
         SYNC: 2,
@@ -23,7 +27,10 @@ const CONSTANTS = {
         JUMPING: 'jumping',
         BALL: 'ball',
         INTERPOLATION: 'interpolation',
-        NETWORKING: 'networking'
+        NETWORKING: 'networking',
+        EVENT: 'event',
+        PLAYER: 'player',
+        OPPONENT: 'opponent'
     },
     PHYSICS: {
         PLAYER: {

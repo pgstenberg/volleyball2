@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"stonecastle.local/pgstenberg/volleyball/internal/app/server"
+	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server"
 )
 
 func main() {
