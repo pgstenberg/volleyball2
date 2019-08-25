@@ -17,7 +17,7 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		return
 	}
 
-	for id, components := range entityManager.GetComponents(constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent) {
+	for id, components := range entityManager.GetComponents(true, constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent) {
 		ic := (*components[constant.InputComponent]).(*component.InputComponent)
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		jc := (*components[constant.JumpComponent]).(*component.JumpComponent)

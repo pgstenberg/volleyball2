@@ -29,7 +29,8 @@ func NewGame() *Game {
 		20:  system.NewInstreamSystem(server, clients),
 		30:  &system.InputSystem{},
 		40:  &system.GravitySystem{},
-		100: &system.TransformSystem{},
+		50:  &system.TransformSystem{},
+		60:  &system.CollisionSystem{},
 		200: system.NewOutstreamSystem(server, clients),
 	})
 
@@ -66,7 +67,7 @@ func (g *Game) loop() {
 						return false
 					}
 				*/
-				for _, components := range entityManager.GetComponents(constant.InputComponent) {
+				for _, components := range entityManager.GetComponents(true, constant.InputComponent) {
 					ic := (*components[constant.InputComponent]).(*component.InputComponent)
 					if ic.Input[tick] == nil {
 						//g.numSkipedTicks++

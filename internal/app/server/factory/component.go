@@ -41,6 +41,15 @@ func (tf ComponentFactory) Create(cType string) *core.Component {
 			IsJumping: false,
 		}
 		return &c
+	
+	case constant.BallComponent:
+
+		var c core.Component = &component.BallComponent{}
+		return &c
+	case constant.PlayerComponent:
+
+		var c core.Component = &component.PlayerComponent{}
+		return &c
 
 	default:
 		return nil

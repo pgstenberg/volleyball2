@@ -27,7 +27,7 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 		return
 	}
 
-	entities := entityManager.GetComponents(constant.TransformComponent)
+	entities := entityManager.GetComponents(true, constant.TransformComponent)
 
 	binputs := []byte{}
 

@@ -17,11 +17,7 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		return
 	}
 
-	for id, components := range entityManager.GetComponents(constant.VelocityComponent, constant.TransformComponent) {
-
-		if components[constant.VelocityComponent] == nil || components[constant.TransformComponent] == nil {
-			return
-		}
+	for id, components := range entityManager.GetComponents(true, constant.VelocityComponent, constant.TransformComponent) {
 
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)

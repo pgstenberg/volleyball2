@@ -52,6 +52,7 @@ func (cs *ConnectSystem) Update(entityManager *core.EntityManager, tick uint16, 
 		entityManager.CreateComponent(cs.clients[cid], constant.VelocityComponent)
 		entityManager.CreateComponent(cs.clients[cid], constant.TransformComponent)
 		entityManager.CreateComponent(cs.clients[cid], constant.JumpComponent)
+		entityManager.CreateComponent(cs.clients[cid], constant.PlayerComponent)
 
 		if len(cs.clients) == 1 {
 			cs.server.Send([]byte{uint8(1), uint8(cid)}, cid)

@@ -63,17 +63,23 @@ func (em *EntityManager) DeleteComponent(id string, cType string) {
 
 }
 
-func (em *EntityManager) GetComponents(cTypes ...string) map[string]map[string]*Component {
+func (em *EntityManager) GetComponents(complete bool, cTypes ...string) map[string]map[string]*Component {
 
 	returnMap := make(map[string]map[string]*Component)
 
 	for entityID, c := range em.entities {
 		for _, cType := range cTypes {
+			_, ok := returnMap[entityID]
 			if c[cType] != nil {
-				if returnMap[entityID] == nil {
+				if !ok {
 					returnMap[entityID] = make(map[string]*Component)
 				}
 				returnMap[entityID][cType] = c[cType]
+			}else{
+				if complete && ok{
+					delete(returnMap, entityID)
+					break
+				}
 			}
 		}
 	}
