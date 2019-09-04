@@ -42,7 +42,7 @@ func (em *EntityManager) CreateComponent(id string, cType string) {
 
 }
 
-func (em *EntityManager) sync() {
+func (em *EntityManager) Sync() {
 	for k, v := range em.createdEntities {
 		em.entities[k] = v
 	}

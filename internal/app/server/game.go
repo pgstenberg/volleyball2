@@ -2,6 +2,7 @@ package server
 
 import (
 	"time"
+	"fmt"
 
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
@@ -33,6 +34,24 @@ func NewGame() *Game {
 		60:  &system.CollisionSystem{},
 		200: system.NewOutstreamSystem(server, clients),
 	})
+
+	// Create ball entity
+	ballEntity := w.GetEntityManager().CreateEntity()
+	w.GetEntityManager().CreateComponent(ballEntity, constant.VelocityComponent)
+	w.GetEntityManager().CreateComponent(ballEntity, constant.TransformComponent)
+	w.GetEntityManager().CreateComponent(ballEntity, constant.BallComponent)
+
+	w.GetEntityManager().Sync()
+
+	components := w.GetEntityManager().GetEntityComponents(ballEntity, constant.TransformComponent)
+
+	fmt.Printf("SIZE: %s\n", components)
+
+	tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+
+	tc.PositionX = 400
+	tc.PositionY = 800
+
 
 	return &Game{
 		world:          w,
@@ -67,14 +86,18 @@ func (g *Game) loop() {
 						return false
 					}
 				*/
+				/*
 				for _, components := range entityManager.GetComponents(true, constant.InputComponent) {
 					ic := (*components[constant.InputComponent]).(*component.InputComponent)
+					
 					if ic.Input[tick] == nil {
-						//g.numSkipedTicks++
+						g.numSkipedTicks++
 						return true
 					}
+					
 				}
-				//g.numSkipedTicks = 0
+				g.numSkipedTicks = 0
+				*/
 				return false
 			}, delta) {
 				g.tick++

@@ -26,7 +26,9 @@ const components = {
         };
     },
     'CONSTANTS.COMPONENT.INPUT': function(){
-        return [false, false, false];
+        return {
+            d: [false, false, false]
+        };
     },
     'CONSTANTS.COMPONENT.GRAPHICS': function(){
         return new PIXI.Graphics();

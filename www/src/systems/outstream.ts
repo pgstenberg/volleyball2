@@ -15,7 +15,7 @@ class OutStreamSystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                let numActiveInput:number = Array.from(components[eid].input).filter(Boolean).length;
+                let numActiveInput:number = Array.from(components[eid].input.d).filter(Boolean).length;
 
                 if(ws_open){
                     let buffer:DataView = new DataView(new ArrayBuffer(3 + numActiveInput))
@@ -30,8 +30,8 @@ class OutStreamSystem extends System {
                     let inputIdx;
                     let idx=0;
 
-                    for(inputIdx = 0; inputIdx < components[eid].input.length; inputIdx++){
-                        if(components[eid].input[inputIdx]){
+                    for(inputIdx = 0; inputIdx < components[eid].input.d.length; inputIdx++){
+                        if(components[eid].input.d[inputIdx]){
                             buffer.setInt8(3+idx, inputIdx);
                             idx++;
                         }

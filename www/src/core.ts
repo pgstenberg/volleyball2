@@ -38,10 +38,10 @@ class Game {
         return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
     }
 
-    _updateSystems(delta:number){
+    _updateSystems(delta:number, tick:number){
         Object.keys(this._systems)
             .sort((s1,s2) => parseInt(s1) - parseInt(s2))
-            .forEach(idx => this._systems[parseInt(idx)].update(this._stateManager, this._entityManager, delta, Global.Rollback));
+            .forEach(idx => this._systems[parseInt(idx)].update(this._stateManager, this._entityManager, delta, tick));
     }
 
     update(delta:number){
@@ -54,7 +54,7 @@ class Game {
             if(Global.Rollback !== undefined){
                 while(Global.Rollback < this.tick){
                     this._entityManager.restore(this._stateManager.restore(Global.Rollback));
-                    this._updateSystems(delta);
+                    this._updateSystems(delta, Global.Rollback);
                     Global.Rollback = Global.Rollback + 1;
                 }
                 Global.Rollback = undefined;
@@ -63,9 +63,11 @@ class Game {
             if(Global.Sync !== undefined){
                 this.tick = Global.Sync;
                 Global.Sync = undefined;
+
+                console.log("TICK!!!! " + this.tick);
             }
             
-            this._updateSystems(delta);
+            this._updateSystems(delta, this.tick);
 
             this._stateManager.store(this.tick, this._entityManager);
 

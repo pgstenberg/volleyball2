@@ -33,12 +33,10 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 			bvc := (*bcomponents[constant.VelocityComponent]).(*component.VelocityComponent)
 			btc := (*bcomponents[constant.TransformComponent]).(*component.TransformComponent)
 	
-			dx := float64(ptc.PositionX - btc.PositionX)
-			dy := float64(ptc.PositionY - btc.PositionY)
+			dx := float64(int(ptc.PositionX) - int(btc.PositionX))
+			dy := float64(int(ptc.PositionY) - int(btc.PositionY))
 
 			dist := math.Sqrt(dx*dx + dy*dy)
-
-			fmt.Printf("DIST>>>>>>>>> %d",dist)
 
 			if (dist < (50 + 5 + 6)){
 				a0 := float64(0)
@@ -47,9 +45,11 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 				}
 				a := math.Atan(dy/dx) + a0
 
+				fmt.Printf("HIT! DX:%d, DY:%d, DELTA:%d\n", dx, dy, dist)
 
-				btc.PositionY = ptc.PositionY + uint16((50 + 5 + 6) * math.Sin(a));
-				btc.PositionX = ptc.PositionX + uint16((50 + 5 + 6) * math.Cos(a));
+
+				btc.PositionY = uint16(math.Round(float64(ptc.PositionY) + (50 + 5 + 6) * math.Sin(a)));
+				btc.PositionX = uint16(math.Round(float64(ptc.PositionX) + (50 + 5 + 6) * math.Cos(a)));
 				bvc.VelocityY = math.Min(15, (10 + pvc.VelocityY));
 				bvc.VelocityX = float64(dx) * -1;
 			}
@@ -68,11 +68,15 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 		if tc.PositionX > 1200 {
 			tc.PositionX = 1200
 
+			fmt.Printf("WALL RIGHT HIT\n")
+
 			if vc.VelocityX > 0 {
 				vc.VelocityX = vc.VelocityX * -1;
 			}
 		}else if tc.PositionX < 0 {
 			tc.PositionX = 0
+
+			fmt.Printf("WALL LEFT HIT\n")
 
 			if vc.VelocityX < 0 {
 				vc.VelocityX = vc.VelocityX * -1;
@@ -81,6 +85,8 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 		} else if (tc.PositionX > 595 && 
 			tc.PositionX < 605 && 
 			tc.PositionY < 150) {
+
+			fmt.Printf("ROPE HIT!\n")
 		vc.VelocityX = vc.VelocityX * -1;
 	}
 

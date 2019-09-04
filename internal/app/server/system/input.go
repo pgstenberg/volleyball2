@@ -2,7 +2,6 @@ package system
 
 import (
 	"fmt"
-
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/pkg/core"
@@ -22,6 +21,11 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		jc := (*components[constant.JumpComponent]).(*component.JumpComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+
+		if ic.Input[tick] == nil {
+			fmt.Printf("%d - NO INPUT!!! \n", tick)
+			continue
+		}
 
 		if ic.Input[tick] != nil && ic.Input[tick-1] != nil {
 			p := false

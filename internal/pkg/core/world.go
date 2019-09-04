@@ -36,7 +36,7 @@ func (w *World) Update(tick uint16, isPaused IsPaused, delta float64) bool {
 		w.systems[k].Update(w.entityManager, tick, pause, delta)
 	}
 
-	w.entityManager.sync()
+	w.entityManager.Sync()
 
 	return !pause
 }
