@@ -43,6 +43,9 @@ func (is *InstreamSystem) Update(entityManager *core.EntityManager, tick uint16,
 			}
 
 			ic := (*entityManager.GetEntityComponents(entity, constant.InputComponent)[constant.InputComponent]).(*component.InputComponent)
+			nc := (*entityManager.GetEntityComponents(entity, constant.NetworkComponent)[constant.NetworkComponent]).(*component.NetworkComponent)
+
+			nc.Interpolate = true
 
 			tick := binary.LittleEndian.Uint16(b[2:4])
 			ic.Input[tick] = []bool{false, false, false}
@@ -54,6 +57,7 @@ func (is *InstreamSystem) Update(entityManager *core.EntityManager, tick uint16,
 
 		// Sync Event
 		case 2:
+
 			b := []byte{uint8(2)}
 			d := make([]byte, 2)
 			binary.LittleEndian.PutUint16(d, tick)

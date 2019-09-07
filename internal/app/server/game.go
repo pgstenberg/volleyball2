@@ -2,7 +2,6 @@ package server
 
 import (
 	"time"
-	"fmt"
 
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
@@ -24,6 +23,7 @@ func NewGame() *Game {
 
 	server := networking.CreateServer()
 	clients := make(map[uint8]string)
+	objects := make(map[uint8]string)
 
 	w := core.NewWorld(factory.ComponentFactory{}, map[int]core.System{
 		10:  system.NewConnectSystem(server, clients),
@@ -32,7 +32,7 @@ func NewGame() *Game {
 		40:  &system.GravitySystem{},
 		50:  &system.TransformSystem{},
 		60:  &system.CollisionSystem{},
-		200: system.NewOutstreamSystem(server, clients),
+		200: system.NewOutstreamSystem(server, clients, objects),
 	})
 
 	// Create ball entity
@@ -40,17 +40,21 @@ func NewGame() *Game {
 	w.GetEntityManager().CreateComponent(ballEntity, constant.VelocityComponent)
 	w.GetEntityManager().CreateComponent(ballEntity, constant.TransformComponent)
 	w.GetEntityManager().CreateComponent(ballEntity, constant.BallComponent)
+	w.GetEntityManager().CreateComponent(ballEntity, constant.NetworkComponent)
 
 	w.GetEntityManager().Sync()
 
-	components := w.GetEntityManager().GetEntityComponents(ballEntity, constant.TransformComponent)
+	//components := w.GetEntityManager().GetEntityComponents(ballEntity, constant.TransformComponent)
+	//tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
 
-	fmt.Printf("SIZE: %s\n", components)
-
-	tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+	tc := (*w.GetEntityManager().GetEntityComponents(ballEntity, constant.TransformComponent)[constant.TransformComponent]).(*component.TransformComponent)
+	nc := (*w.GetEntityManager().GetEntityComponents(ballEntity, constant.NetworkComponent)[constant.NetworkComponent]).(*component.NetworkComponent)
+	nc.Synchronize = true
 
 	tc.PositionX = 400
 	tc.PositionY = 800
+
+	objects[10] = ballEntity
 
 
 	return &Game{

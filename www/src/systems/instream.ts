@@ -78,6 +78,56 @@ class InStreamSystem extends System {
                         });
 
                 break;
+
+                case 4:
+
+                        let ballComponents = _entityManager.getComponents(
+                            true,
+                            CONSTANTS.COMPONENT.BALL);
+
+                        Object.keys(inPackage['sync'])
+                            .map(v => parseInt(v))
+                            .forEach(object_id => {
+
+
+                            /// SYNC HERE!!!
+
+                            console.log("SYNC " + object_id + " PACKAGE: " + JSON.stringify(inPackage));
+
+                            let ballId = Object.keys(ballComponents)[0];
+
+                            let em = new EntityManager(components);
+                            let a = _stateManager.restore(inPackage['tick']);
+
+                            console.log("A COMPONENT " + JSON.stringify(a));
+
+                            em.restore(a)
+
+                            console.log("EID0: " + ballId);
+                            
+                            let c0 = em.getComponents(
+                                true, 
+                                CONSTANTS.COMPONENT.TRANSFORM,
+                                CONSTANTS.COMPONENT.VELOCITY);
+
+                            console.log("COMPONENT " + JSON.stringify(c0));
+
+                            c0[ballId].transform.x = inPackage['sync'][object_id]['x'];
+                            c0[ballId].transform.y = inPackage['sync'][object_id]['y'];
+                            c0[ballId].velocity.x = inPackage['sync'][object_id]['vx'];
+                            c0[ballId].velocity.y = inPackage['sync'][object_id]['vy'];
+
+                            _stateManager.store(inPackage['tick'], em);
+
+                            Global.Rollback = inPackage['tick'];
+                            
+                            
+                        });
+                break;
+
+                case 5:
+                    sync_required = true;
+                break;
             }
             
     

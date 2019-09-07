@@ -16,16 +16,20 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		return
 	}
 
-	for id, components := range entityManager.GetComponents(true, constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent) {
+	for id, components := range entityManager.GetComponents(true, constant.InputComponent, constant.VelocityComponent, constant.JumpComponent, constant.TransformComponent, constant.PlayerComponent) {
 		ic := (*components[constant.InputComponent]).(*component.InputComponent)
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		jc := (*components[constant.JumpComponent]).(*component.JumpComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+		pc := (*components[constant.PlayerComponent]).(*component.PlayerComponent)
 
 		if ic.Input[tick] == nil {
 			fmt.Printf("%d - NO INPUT!!! \n", tick)
+			pc.Desynced = true
 			continue
 		}
+
+		pc.Desynced = false
 
 		if ic.Input[tick] != nil && ic.Input[tick-1] != nil {
 			p := false

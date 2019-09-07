@@ -52,6 +52,7 @@ class Game {
             this.dt = this.dt - this.step;
 
             if(Global.Rollback !== undefined){
+                console.log("-----> ROLLBACK " + Global.Rollback);
                 while(Global.Rollback < this.tick){
                     this._entityManager.restore(this._stateManager.restore(Global.Rollback));
                     this._updateSystems(delta, Global.Rollback);
@@ -137,7 +138,7 @@ class EntityManager {
         let copy: { [key: string]: { [key: string]: any } } = {};
 
         let components = self.getComponents(
-            true,
+            false,
             CONSTANTS.COMPONENT.VELOCITY, 
             CONSTANTS.COMPONENT.TRANSFORM,
             CONSTANTS.COMPONENT.INPUT);
@@ -145,7 +146,10 @@ class EntityManager {
         Object.keys(components).forEach(function(eid) {
             copy[eid] = {};
             Object.keys(components[eid]).forEach(function(c) {
-                copy[eid][c] = Object.assign({}, components[eid][c]);
+                if(typeof components[eid][c] !== 'undefined'){
+                    ///console.log("COPY " + eid + " === " + JSON.stringify(components[eid][c]));
+                    copy[eid][c] = Object.assign({}, components[eid][c]);
+                }
             });
         });
 
@@ -157,6 +161,10 @@ class EntityManager {
 
         Object.keys(state).forEach(function(eid) {
             Object.keys(state[eid]).forEach(function(c) {
+                if(!(eid in self._entities)){
+                    self._entities[eid] = {};
+                }
+
                 self._entities[eid][c] = Object.assign({}, state[eid][c]);
             });
         });

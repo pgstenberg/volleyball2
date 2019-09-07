@@ -18,7 +18,7 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 	}
 
 	playerComponent := entityManager.GetComponents(true, constant.VelocityComponent, constant.TransformComponent, constant.PlayerComponent)
-	ballComponent := entityManager.GetComponents(true, constant.VelocityComponent, constant.TransformComponent, constant.BallComponent)
+	ballComponent := entityManager.GetComponents(true, constant.VelocityComponent, constant.TransformComponent, constant.BallComponent, constant.NetworkComponent)
 
 	/*
 	Player with Ball collision stuff
@@ -32,6 +32,9 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 
 			bvc := (*bcomponents[constant.VelocityComponent]).(*component.VelocityComponent)
 			btc := (*bcomponents[constant.TransformComponent]).(*component.TransformComponent)
+			bnc := (*bcomponents[constant.NetworkComponent]).(*component.NetworkComponent)
+
+			bnc.RequireSynchronize = false
 	
 			dx := float64(int(ptc.PositionX) - int(btc.PositionX))
 			dy := float64(int(ptc.PositionY) - int(btc.PositionY))
@@ -46,6 +49,8 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 				a := math.Atan(dy/dx) + a0
 
 				fmt.Printf("HIT! DX:%d, DY:%d, DELTA:%d\n", dx, dy, dist)
+
+				bnc.RequireSynchronize = true
 
 
 				btc.PositionY = uint16(math.Round(float64(ptc.PositionY) + (50 + 5 + 6) * math.Sin(a)));
@@ -64,11 +69,14 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 
 		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
 		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+		bnc := (*components[constant.NetworkComponent]).(*component.NetworkComponent)
 
 		if tc.PositionX > 1200 {
 			tc.PositionX = 1200
 
 			fmt.Printf("WALL RIGHT HIT\n")
+
+			bnc.RequireSynchronize = true
 
 			if vc.VelocityX > 0 {
 				vc.VelocityX = vc.VelocityX * -1;
@@ -77,6 +85,8 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 			tc.PositionX = 0
 
 			fmt.Printf("WALL LEFT HIT\n")
+
+			bnc.RequireSynchronize = true
 
 			if vc.VelocityX < 0 {
 				vc.VelocityX = vc.VelocityX * -1;

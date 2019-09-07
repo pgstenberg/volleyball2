@@ -2,7 +2,8 @@ package system
 
 import (
 	"encoding/binary"
-
+	"math"
+	"fmt"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/pkg/core"
@@ -12,12 +13,14 @@ import (
 type OutstreamSystem struct {
 	server  *networking.Server
 	clients map[uint8]string
+	objects map[uint8]string
 }
 
-func NewOutstreamSystem(server *networking.Server, clients map[uint8]string) *OutstreamSystem {
+func NewOutstreamSystem(server *networking.Server, clients map[uint8]string, objects map[uint8]string) *OutstreamSystem {
 	return &OutstreamSystem{
 		server:  server,
 		clients: clients,
+		objects: objects,
 	}
 }
 
@@ -27,36 +30,125 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 		return
 	}
 
-	entities := entityManager.GetComponents(true, constant.TransformComponent)
+	desyncedEntities := entityManager.GetComponents(true, constant.PlayerComponent)
 
-	binputs := []byte{}
+	for entityID, components := range desyncedEntities {
 
-	for entityID, components := range entities {
+		pc := (*components[constant.PlayerComponent]).(*component.PlayerComponent)
 
-		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
-
-		if tc.PrevPositionX == tc.PositionX && tc.PrevPositionY == tc.PositionY {
+		if !pc.Desynced {
 			continue
 		}
 
 		for k, v := range os.clients {
 			if v == entityID {
-				binputs = append(binputs, []byte{k}...)
+				os.server.Send([]byte{uint8(5)}, k)
+				break
 			}
 		}
+	}
 
-		dx := make([]byte, 2)
-		binary.LittleEndian.PutUint16(dx, tc.PositionX)
-		binputs = append(binputs, dx...)
+	/*
+		INTERPOLATION PACKAGES
+	*/ 
+	interpolationEntities := entityManager.GetComponents(true, constant.TransformComponent, constant.NetworkComponent)
 
-		dy := make([]byte, 2)
-		binary.LittleEndian.PutUint16(dy, tc.PositionY)
-		binputs = append(binputs, dy...)
+	binputs := []byte{}
+
+	for entityID, components := range interpolationEntities {
+
+		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+		nc := (*components[constant.NetworkComponent]).(*component.NetworkComponent)
+
+		if nc.Interpolate {
+
+			if !nc.RequireInterpolation {
+				continue
+			}
+
+			for k, v := range os.clients {
+				if v == entityID {
+					binputs = append(binputs, []byte{k}...)
+					break
+				}
+			}
+
+			dx := make([]byte, 2)
+			binary.LittleEndian.PutUint16(dx, tc.PositionX)
+			binputs = append(binputs, dx...)
+
+			dy := make([]byte, 2)
+			binary.LittleEndian.PutUint16(dy, tc.PositionY)
+			binputs = append(binputs, dy...)
+
+		}
+
 
 	}
 
 	if len(binputs) > 0 {
 		b0 := []byte{uint8(3), uint8(len(binputs) / 5)}
+
+		dt := make([]byte, 2)
+		binary.LittleEndian.PutUint16(dt, tick)
+		b0 = append(b0, dt...)
+
+		b0 = append(b0, binputs...)
+		os.server.Send(b0)
+	}
+
+	/*
+		SYNCHRONIZATION PACKAGES
+	*/ 
+	synchronizeEntities := entityManager.GetComponents(true, constant.TransformComponent, constant.VelocityComponent, constant.NetworkComponent)
+
+	binputs = []byte{}
+
+	for entityID, components := range synchronizeEntities {
+
+		tc := (*components[constant.TransformComponent]).(*component.TransformComponent)
+		vc := (*components[constant.VelocityComponent]).(*component.VelocityComponent)
+		nc := (*components[constant.NetworkComponent]).(*component.NetworkComponent)
+
+		if nc.Synchronize {
+
+			if !nc.RequireSynchronize {
+				continue
+			}
+
+			for k, v := range os.objects {
+				if v == entityID {
+					binputs = append(binputs, []byte{k}...)
+					break
+				}
+			}
+
+			dx := make([]byte, 2)
+			binary.LittleEndian.PutUint16(dx, tc.PositionX)
+			binputs = append(binputs, dx...)
+
+			dy := make([]byte, 2)
+			binary.LittleEndian.PutUint16(dy, tc.PositionY)
+			binputs = append(binputs, dy...)
+
+
+
+			dvx := make([]byte, 8)
+			binary.LittleEndian.PutUint64(dvx, math.Float64bits(vc.VelocityX))
+			binputs = append(binputs, dvx...)
+
+			dvy := make([]byte, 8)
+			binary.LittleEndian.PutUint64(dvy, math.Float64bits(vc.VelocityY))
+			binputs = append(binputs, dvy...)
+
+			fmt.Printf("SENDING VX: %d, VY: %d\n", vc.VelocityX, vc.VelocityY)
+			fmt.Println(dvx)
+			fmt.Println(dvy)
+		}
+	}
+
+	if len(binputs) > 0 {
+		b0 := []byte{uint8(4), uint8(len(binputs) / 21)}
 
 		dt := make([]byte, 2)
 		binary.LittleEndian.PutUint16(dt, tick)

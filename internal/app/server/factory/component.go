@@ -48,7 +48,18 @@ func (tf ComponentFactory) Create(cType string) *core.Component {
 		return &c
 	case constant.PlayerComponent:
 
-		var c core.Component = &component.PlayerComponent{}
+		var c core.Component = &component.PlayerComponent{
+			Desynced: true,
+		}
+		return &c
+	case constant.NetworkComponent:
+
+		var c core.Component = &component.NetworkComponent{
+			Interpolate: false,
+			Synchronize: false,
+			RequireInterpolation: false,
+			RequireSynchronize: false,
+		}
 		return &c
 
 	default:
