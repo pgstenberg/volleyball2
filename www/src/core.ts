@@ -52,10 +52,10 @@ class Game {
             this.dt = this.dt - this.step;
 
             if(Global.Rollback !== undefined){
-                console.log("-----> ROLLBACK " + Global.Rollback);
+                this._entityManager.restore(this._stateManager.restore(Global.Rollback));
                 while(Global.Rollback < this.tick){
-                    this._entityManager.restore(this._stateManager.restore(Global.Rollback));
                     this._updateSystems(delta, Global.Rollback);
+                    this._stateManager.store(Global.Rollback, this._entityManager);
                     Global.Rollback = Global.Rollback + 1;
                 }
                 Global.Rollback = undefined;
@@ -64,8 +64,6 @@ class Game {
             if(Global.Sync !== undefined){
                 this.tick = Global.Sync;
                 Global.Sync = undefined;
-
-                console.log("TICK!!!! " + this.tick);
             }
             
             this._updateSystems(delta, this.tick);

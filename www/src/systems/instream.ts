@@ -89,7 +89,6 @@ class InStreamSystem extends System {
                             .map(v => parseInt(v))
                             .forEach(object_id => {
 
-
                             /// SYNC HERE!!!
 
                             console.log("SYNC " + object_id + " PACKAGE: " + JSON.stringify(inPackage));
@@ -99,29 +98,24 @@ class InStreamSystem extends System {
                             let em = new EntityManager(components);
                             let a = _stateManager.restore(inPackage['tick']);
 
-                            console.log("A COMPONENT " + JSON.stringify(a));
-
                             em.restore(a)
-
-                            console.log("EID0: " + ballId);
                             
                             let c0 = em.getComponents(
                                 true, 
                                 CONSTANTS.COMPONENT.TRANSFORM,
                                 CONSTANTS.COMPONENT.VELOCITY);
 
-                            console.log("COMPONENT " + JSON.stringify(c0));
-
                             c0[ballId].transform.x = inPackage['sync'][object_id]['x'];
                             c0[ballId].transform.y = inPackage['sync'][object_id]['y'];
                             c0[ballId].velocity.x = inPackage['sync'][object_id]['vx'];
                             c0[ballId].velocity.y = inPackage['sync'][object_id]['vy'];
 
+                            console.log("BEFORE STORE: " + JSON.stringify(c0));
                             _stateManager.store(inPackage['tick'], em);
+                            console.log("AFTER STORE: " + JSON.stringify(_stateManager.restore(inPackage['tick'])));
 
                             Global.Rollback = inPackage['tick'];
-                            
-                            
+                              
                         });
                 break;
 

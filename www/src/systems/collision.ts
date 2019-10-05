@@ -30,7 +30,7 @@ class CollisionSystem extends System {
 
                             let a = Math.atan(dy/dx) + (Math.sign(dx) === 1 ? -Math.PI : 0);
 
-                            console.log("HIT!" + " DX: " + dx + ", DY:" + dy + ", VY: " + playerComponents[eid].velocity.y + ", DIST: " + dist + " ANGLE1: " + a + ", X:" + playerComponents[eid].transform.x + ", Y: " + playerComponents[eid].transform.y + ", X1:" + ballComponent[bid].transform.x + ", Y1:" + ballComponent[bid].transform.y);
+                            console.log("TICK " + tick + " HIT!" + " DX: " + dx + ", DY:" + dy + ", VY: " + playerComponents[eid].velocity.y + ", DIST: " + dist + " ANGLE1: " + a + ", X:" + playerComponents[eid].transform.x + ", Y: " + playerComponents[eid].transform.y + ", X1:" + ballComponent[bid].transform.x + ", Y1:" + ballComponent[bid].transform.y);
 
                             ballComponent[bid].transform.y = Math.round(playerComponents[eid].transform.y + (50 + 5 + 6) * Math.sin(a));
                             ballComponent[bid].transform.x = Math.round(playerComponents[eid].transform.x + (50 + 5 + 6) * Math.cos(a));
@@ -76,8 +76,9 @@ class CollisionSystem extends System {
 
                 // FLOOR COLLISION
                 if(ballComponent[bid].transform.y <= 0){
-                    ballComponent[bid].transform.y = 0;
+                    ballComponent[bid].transform.y = 400;
                     ballComponent[bid].velocity.x = 0;
+                    ballComponent[bid].velocity.y = 0;
 
                 }
             });

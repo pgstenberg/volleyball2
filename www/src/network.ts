@@ -119,8 +119,6 @@ if ("WebSocket" in window) {
                 let syncCount = dv.getUint8(1);
 
                 let sync:{ [key: number]: { [key: string]: number } } = {};
-
-                console.log(">>> " + dv.byteLength + " data: " + JSON.stringify(dv.buffer));
                 
                 let idxSync;
                 for (idx = 4; idx < dv.byteLength; idx = idx + 21) {
@@ -132,18 +130,14 @@ if ("WebSocket" in window) {
                     let idx1;
                     for(idx1 = idx + 5; idx1 < idx + 13; idx1 = idx1 +1 ){
                         let i1 = dv.getUint8(idx1);
-                        console.log("b: " + i1);
                         u64b.push(i1);
                     }
                     let vx = decodeFloat(u64b);
-
-                    console.log("-----------");
 
                     let u64b2: number[] = [];
                     let idx2;
                     for(idx2 = idx + 13; idx2 < idx + 21; idx2 = idx2 +1 ){
                         let i2 = dv.getUint8(idx2);
-                        console.log("b: " + i2);
                         u64b2.push(i2);
                     }
                     let vy = decodeFloat(u64b2);
@@ -157,8 +151,6 @@ if ("WebSocket" in window) {
                 }
 
                 packageSync.sync = sync;
-
-                console.log(">>>>>>>>>>>>>>>> SYNC: " + JSON.stringify(packageSync));
 
                 inStreamBuffer.push(packageSync);
 

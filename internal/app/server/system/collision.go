@@ -102,8 +102,9 @@ func (cs *CollisionSystem) Update(entityManager *core.EntityManager, tick uint16
 
 	// FLOOR COLLISION
 	if tc.PositionY <= 0 {
-		tc.PositionY = 0;
+		tc.PositionY = 400;
 		vc.VelocityX = 0;
+		vc.VelocityY = 0;
 	}
 
 	}
