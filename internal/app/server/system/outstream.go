@@ -3,7 +3,7 @@ package system
 import (
 	"encoding/binary"
 	"math"
-	"fmt"
+
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/pkg/core"
@@ -50,7 +50,7 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 
 	/*
 		INTERPOLATION PACKAGES
-	*/ 
+	*/
 	interpolationEntities := entityManager.GetComponents(true, constant.TransformComponent, constant.NetworkComponent)
 
 	binputs := []byte{}
@@ -83,7 +83,6 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 
 		}
 
-
 	}
 
 	if len(binputs) > 0 {
@@ -99,7 +98,7 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 
 	/*
 		SYNCHRONIZATION PACKAGES
-	*/ 
+	*/
 	synchronizeEntities := entityManager.GetComponents(true, constant.TransformComponent, constant.VelocityComponent, constant.NetworkComponent)
 
 	binputs = []byte{}
@@ -131,8 +130,6 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 			binary.LittleEndian.PutUint16(dy, tc.PositionY)
 			binputs = append(binputs, dy...)
 
-
-
 			dvx := make([]byte, 8)
 			binary.LittleEndian.PutUint64(dvx, math.Float64bits(vc.VelocityX))
 			binputs = append(binputs, dvx...)
@@ -140,10 +137,6 @@ func (os *OutstreamSystem) Update(entityManager *core.EntityManager, tick uint16
 			dvy := make([]byte, 8)
 			binary.LittleEndian.PutUint64(dvy, math.Float64bits(vc.VelocityY))
 			binputs = append(binputs, dvy...)
-
-			fmt.Printf("SENDING VX: %d, VY: %d\n", vc.VelocityX, vc.VelocityY)
-			fmt.Println(dvx)
-			fmt.Println(dvy)
 		}
 	}
 

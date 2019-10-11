@@ -19,7 +19,7 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 
 	for id, components := range entityManager.GetComponents(false, constant.VelocityComponent, constant.TransformComponent, constant.NetworkComponent) {
 
-		if components[constant.VelocityComponent] == nil  || components[constant.TransformComponent] == nil{
+		if components[constant.VelocityComponent] == nil || components[constant.TransformComponent] == nil {
 			return
 		}
 
@@ -38,10 +38,10 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		}
 
 		if tc.PrevPositionX != tc.PositionX || tc.PrevPositionY != tc.PositionY {
-			fmt.Printf("TICK: %d, ID: %s, X: %d, Y: %d, prevX: %d, prevY: %d, velX: %d, velY: %d \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
+			fmt.Printf("%d %s    X: %04d    Y: %04d   PX: %04d   PY: %04d   VX %04f    VY: %04f \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
 		}
 
-		if components[constant.NetworkComponent] != nil{
+		if components[constant.NetworkComponent] != nil {
 			nc := (*components[constant.NetworkComponent]).(*component.NetworkComponent)
 			if nc.Interpolate {
 				if tc.PrevPositionX != tc.PositionX || tc.PrevPositionY != tc.PositionY {

@@ -49,7 +49,7 @@ class CollisionSystem extends System {
                 if(ballComponent[bid].transform.x > 1200){
                     ballComponent[bid].transform.x = 1200;
 
-                    console.log("RIGHT WALL HIT!");
+                    console.log("TICK " + tick + " RIGHT WALL HIT!");
 
                     if(ballComponent[bid].velocity.x > 0){
                         ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
@@ -58,7 +58,7 @@ class CollisionSystem extends System {
                     ballComponent[bid].transform.x = 0;
 
                     
-                    console.log("LEFT WALL HIT!");
+                    console.log("TICK " + tick +  "LEFT WALL HIT!");
 
                     if(ballComponent[bid].velocity.x < 0){
                         ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
@@ -70,17 +70,14 @@ class CollisionSystem extends System {
                         ballComponent[bid].transform.y < 150){
 
                     
-                    console.log("ROPE HIT!");
+                    console.log("TICK " + tick +  "ROPE HIT!");
                     ballComponent[bid].velocity.x = ballComponent[bid].velocity.x * -1;
-                }
-
-                // FLOOR COLLISION
-                if(ballComponent[bid].transform.y <= 0){
-                    ballComponent[bid].transform.y = 400;
+                }else if(ballComponent[bid].transform.y <= 50){
+                    ballComponent[bid].transform.y = 50;
                     ballComponent[bid].velocity.x = 0;
                     ballComponent[bid].velocity.y = 0;
-
                 }
+
             });
     }
 }
