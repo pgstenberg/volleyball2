@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/component"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/app/server/constant"
 	"stonecastle.internal.stonepath.se/pgstenberg/volleyball/internal/pkg/core"
@@ -24,7 +25,7 @@ func (is *InputSystem) Update(entityManager *core.EntityManager, tick uint16, pa
 		pc := (*components[constant.PlayerComponent]).(*component.PlayerComponent)
 
 		if ic.Input[tick] == nil {
-			fmt.Printf("%d - NO INPUT!!! \n", tick)
+			fmt.Printf("TICK: %d - NO INPUT!!! \n", tick)
 			pc.Desynced = true
 			continue
 		}

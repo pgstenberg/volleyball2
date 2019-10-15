@@ -52,13 +52,15 @@ class Game {
             this.dt = this.dt - this.step;
 
             if(Global.Rollback !== undefined){
-                this._entityManager.restore(this._stateManager.restore(Global.Rollback));
+                console.log("---- ROLLBACK START ----");
+                this._entityManager.restore(this._stateManager.restore(Global.Rollback-1));
                 while(Global.Rollback < this.tick){
                     this._updateSystems(delta, Global.Rollback);
                     this._stateManager.store(Global.Rollback, this._entityManager);
                     Global.Rollback = Global.Rollback + 1;
                 }
                 Global.Rollback = undefined;
+                console.log("---- ROLLBACK END ----");
             }
 
             if(Global.Sync !== undefined){
@@ -145,7 +147,6 @@ class EntityManager {
             copy[eid] = {};
             Object.keys(components[eid]).forEach(function(c) {
                 if(typeof components[eid][c] !== 'undefined'){
-                    ///console.log("COPY " + eid + " === " + JSON.stringify(components[eid][c]));
                     copy[eid][c] = Object.assign({}, components[eid][c]);
                 }
             });

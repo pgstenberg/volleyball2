@@ -19,6 +19,10 @@ class InputSystem extends System {
                     Global.Rollback = tick - 100;
                 }
 
+                if(ws_open){
+                    console.log("TICK: " + tick + ", ID: " + eid + " , INPUT: " + components[eid].input.d);
+                }
+
                 /* RIGHT */
                 if(components[eid].input.d[INPUT.RIGHT]){
                     if(components[eid].velocity.x < 0){

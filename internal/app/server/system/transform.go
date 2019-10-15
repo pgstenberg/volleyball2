@@ -38,7 +38,7 @@ func (ts *TransformSystem) Update(entityManager *core.EntityManager, tick uint16
 		}
 
 		if tc.PrevPositionX != tc.PositionX || tc.PrevPositionY != tc.PositionY {
-			fmt.Printf("%d %s    X: %04d    Y: %04d   PX: %04d   PY: %04d   VX %04f    VY: %04f \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
+			fmt.Printf("%d %s    X: %d    Y: %d   PX: %d   PY: %d   VX %f    VY: %f \n", tick, id, tc.PositionX, tc.PositionY, tc.PrevPositionX, tc.PrevPositionY, vc.VelocityX, vc.VelocityY)
 		}
 
 		if components[constant.NetworkComponent] != nil {

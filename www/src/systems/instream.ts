@@ -57,8 +57,6 @@ class InStreamSystem extends System {
 
                 case 3:
 
-                    console.log("INPUT >>>>> " + JSON.stringify(inPackage['state']));
-
                     Object.keys(inPackage['state'])
                         .map(v => parseInt(v))
                         .forEach(client_id => {
@@ -110,9 +108,7 @@ class InStreamSystem extends System {
                             c0[ballId].velocity.x = inPackage['sync'][object_id]['vx'];
                             c0[ballId].velocity.y = inPackage['sync'][object_id]['vy'];
 
-                            console.log("BEFORE STORE: " + JSON.stringify(c0));
                             _stateManager.store(inPackage['tick'], em);
-                            console.log("AFTER STORE: " + JSON.stringify(_stateManager.restore(inPackage['tick'])));
 
                             Global.Rollback = inPackage['tick'];
                               
