@@ -13,10 +13,8 @@ class InputSystem extends System {
         Object.keys(components)
             .forEach(function(eid){
 
-                components[eid].input.d = Array.from(Global.Input);
-
-                if(Global.Input[INPUT.ROLLBACK] && Global.Rollback === undefined){
-                    Global.Rollback = tick - 100;
+                if(Global.Rollback === undefined){
+                    components[eid].input.d = Array.from(Global.Input);
                 }
 
                 if(ws_open){

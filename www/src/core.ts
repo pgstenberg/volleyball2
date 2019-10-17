@@ -38,9 +38,10 @@ class Game {
         return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
     }
 
-    _updateSystems(delta:number, tick:number){
+    _updateSystems(delta:number, tick:number, excludeIntervals:[number, number][]=[]){
         Object.keys(this._systems)
             .sort((s1,s2) => parseInt(s1) - parseInt(s2))
+            .filter(s => excludeIntervals.find(i => parseInt(s) > i[0] && parseInt(s) < i[1]) === undefined)
             .forEach(idx => this._systems[parseInt(idx)].update(this._stateManager, this._entityManager, delta, tick));
     }
 
@@ -53,11 +54,14 @@ class Game {
 
             if(Global.Rollback !== undefined){
                 console.log("---- ROLLBACK START ----");
-                this._entityManager.restore(this._stateManager.restore(Global.Rollback-1));
+                this._entityManager.restore(this._stateManager.restore(Global.Rollback));
                 while(Global.Rollback < this.tick){
-                    this._updateSystems(delta, Global.Rollback);
-                    this._stateManager.store(Global.Rollback, this._entityManager);
                     Global.Rollback = Global.Rollback + 1;
+                    this._updateSystems(delta, Global.Rollback, [
+                        [0,5],
+                        [10,15], 
+                        [30,100]]);
+                    this._stateManager.store(Global.Rollback, this._entityManager);
                 }
                 Global.Rollback = undefined;
                 console.log("---- ROLLBACK END ----");

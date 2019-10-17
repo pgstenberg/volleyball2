@@ -5,8 +5,6 @@ class RenderSystem extends System {
     constructor(stage: PIXI.Container){ 
         super();
         this._stage = stage;
-
-        console.log(">>>>>>>>>>> SETTING STAGE" + stage);
     }
     
 
