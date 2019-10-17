@@ -52,7 +52,7 @@ class InStreamSystem extends System {
                     }
                 break;
                 case 2:
-                    Global.Sync = inPackage['tick'] + Math.round(inPackage['delta'] * (1/60)) + 5;
+                    Global.Sync = inPackage['tick'] + Math.round(inPackage['delta'] * (1/60)) + 2;
                 break;
 
                 case 3:
